@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista Produktów - Pełny Audyt</title>
+    
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f9; color: #333; }
+        h1, h2, h3 { color: #333; }
+        
+        /* --- NAGŁÓWEK I PRZYCISKI --- */
+        .header-actions {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 20px; border-bottom: 2px solid #ddd; padding-bottom: 15px;
+        }
+        .header-buttons-container {
+            display: flex; gap: 10px;
+        }
+        .pdf-btn {
+            color: white; border: none; padding: 12px 20px;
+            font-size: 15px; font-weight: bold; border-radius: 6px; cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: background-color 0.2s, transform 0.1s;
+            display: inline-flex; align-items: center;
+        }
+        .pdf-btn:active { transform: translateY(2px); }
+        .btn-red { background-color: #dc3545; }
+        .btn-red:hover { background-color: #c82333; }
+        .btn-green { background-color: #28a745; }
+        .btn-green:hover { background-color: #218838; }
+
+        table.dataTable { background-color: #fff; margin-top: 20px !important; }
+        table.dataTable thead th { background-color: #007BFF; color: white; border-bottom: none; }
+        .loading { font-size: 1.2em; color: #666; margin-bottom: 20px; }
+
+        /* --- STYLE BŁĘDÓW W TABELI --- */
+        tr.highlight-brown td { background-color: #f4ece8 !important; color: #5c3a21 !important; } 
+        tr.highlight-red-outline td { background-color: #ffe6e6 !important; color: #cc0000 !important; font-weight: bold; } 
+        tr.highlight-pink td { background-color: #fce4ec !important; color: #c2185b !important; } 
+        tr.highlight-red td { background-color: #ffcccc !important; color: #900 !important; } 
+        tr.highlight-orange td { background-color: #ffe5cc !important; color: #b35900 !important; } 
+        tr.highlight-grey td { background-color: #e0e0e0 !important; color: #444 !important; } 
+        tr.highlight-blue td { background-color: #cce5ff !important; color: #004085 !important; } 
+        tr.highlight-cyan td { background-color: #e0f7fa !important; color: #00838f !important; } 
+        tr.highlight-yellow td { background-color: #fff3cd !important; color: #856404 !important; } 
+        tr.highlight-purple td { background-color: #f3e5f5 !important; color: #7b1fa2 !important; } 
+        tr.highlight-indigo td { background-color: #e8eaf6 !important; color: #3f51b5 !important; } 
+        tr.highlight-teal td { background-color: #e0f2f1 !important; color: #00796b !important; } 
+
+        /* --- LEGENDA --- */
+        .legend-container {
+            margin-top: 15px; padding: 15px; background-color: #fff;
+            border: 1px solid #ddd; display: inline-block; border-radius: 4px;
+        }
+        .legend-item {
+            margin-bottom: 6px; padding: 4px 6px; border-radius: 4px;
+            cursor: pointer; transition: background-color 0.2s; display: flex; align-items: center;
+        }
+        .legend-item:hover { background-color: #f0f0f5; }
+        .legend-color-box {
+            display: inline-block; width: 18px; height: 18px;
+            margin-right: 10px; border: 1px solid #333; flex-shrink: 0;
+        }
+        .legend-text { font-size: 13px; color: #444; }
+
+        .box-correct { background-color: #fff; border: 2px solid #28a745 !important; }
+        .box-brown { background-color: #d7ccc8; border-color: #5d4037; }
+        .box-red-outline { background-color: #ffebee; border: 2px solid #d32f2f !important; }
+        .box-pink { background-color: #f8bbd0; border-color: #c2185b; }
+        .box-red { background-color: #ffcdd2; border-color: #d32f2f; }
+        .box-orange { background-color: #ffe0b2; border-color: #e65100; }
+        .box-grey { background-color: #e0e0e0; border-color: #616161; }
+        .box-blue { background-color: #bbdefb; border-color: #1976d2; }
+        .box-cyan { background-color: #b2ebf2; border-color: #00bcd4; } 
+        .box-yellow { background-color: #fff9c4; border-color: #fbc02d; }
+        .box-purple { background-color: #e1bee7; border-color: #7b1fa2; }
+        .box-indigo { background-color: #c5cae9; border-color: #3f51b5; }
+        .box-teal { background-color: #b2dfdb; border-color: #00796b; }
+        .box-striped-grey { background: repeating-linear-gradient(45deg, #fff, #fff 4px, #bdbdbd 4px, #bdbdbd 8px); border-color: #757575; }
+        .box-striped-green { background: repeating-linear-gradient(45deg, #fff, #fff 4px, #a5d6a7 4px, #a5d6a7 8px); border-color: #388e3c; }
+
+        .dynamic-section {
+            margin-top: 20px; padding: 20px; background-color: #fff;
+            border: 1px solid #ddd; border-radius: 4px; min-height: 50px;
+        }
+        .dynamic-link {
+            font-size: 1.2em; font-weight: bold; color: #007BFF;
+            text-decoration: none; cursor: pointer; border-bottom: 1px dashed #007BFF;
+        }
+        .dynamic-link:hover { color: #0056b3; border-bottom: 1px solid #0056b3; }
+        #dynamic-container { margin-top: 20px; border-top: 2px solid #eee; padding-top: 15px; }
+
+        /* --- DASHBOARD STATYSTYK --- */
+        .detailed-stats-panel { margin-top: 30px; display: flex; flex-direction: column; gap: 20px; }
+        .stats-row { display: flex; gap: 20px; flex-wrap: wrap; }
+        .stats-section {
+            flex: 1; background: #fff; padding: 15px 20px 20px 20px;
+            border-radius: 8px; border: 1px solid #ddd;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); min-width: 300px;
+        }
+        .stats-section h3 {
+            margin-top: 0; margin-bottom: 15px; font-size: 1.1em;
+            color: #555; border-bottom: 2px solid #eee; padding-bottom: 10px; text-transform: uppercase;
+        }
+        .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 15px; }
+        .stat-box {
+            text-align: center; padding: 15px 10px; background-color: #f8f9fa;
+            border: 1px solid #e9ecef; border-radius: 6px; transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .stat-box:hover { transform: translateY(-3px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .stat-number { font-size: 2em; font-weight: bold; margin-bottom: 5px; }
+        .stat-label { font-size: 0.85em; color: #666; font-weight: bold; }
+
+        .stat-box.total { border-bottom: 4px solid #007BFF; } .stat-box.total .stat-number { color: #007BFF; }
+        .stat-box.correct { border-bottom: 4px solid #28a745; background-color: #f2fdf5; } .stat-box.correct .stat-number { color: #28a745; }
+        .stat-box.duplicates { border-bottom: 4px solid #6c757d; } .stat-box.duplicates .stat-number { color: #6c757d; }
+        .stat-box.dup-sup { border-bottom: 4px solid #388e3c; background-color: #f1f8e9; } .stat-box.dup-sup .stat-number { color: #388e3c; }
+
+        .stat-box.error-brown { border-bottom: 4px solid #5d4037; background-color: #efebe9; } .stat-box.error-brown .stat-number { color: #5d4037; }
+        .stat-box.error-red-outline { border-bottom: 4px solid #d32f2f; background-color: #ffebee; } .stat-box.error-red-outline .stat-number { color: #d32f2f; }
+        .stat-box.error-pink { border-bottom: 4px solid #c2185b; background-color: #fce4ec; } .stat-box.error-pink .stat-number { color: #c2185b; }
+
+        .stat-box.error-red { border-bottom: 4px solid #dc3545; background-color: #fff5f5; } .stat-box.error-red .stat-number { color: #dc3545; }
+        .stat-box.error-orange { border-bottom: 4px solid #fd7e14; background-color: #fff8f2; } .stat-box.error-orange .stat-number { color: #fd7e14; }
+        .stat-box.error-grey { border-bottom: 4px solid #495057; background-color: #f8f9fa; } .stat-box.error-grey .stat-number { color: #495057; }
+
+        .stat-box.warning-yellow { border-bottom: 4px solid #ffc107; background-color: #fffdf6; } .stat-box.warning-yellow .stat-number { color: #d39e00; }
+        .stat-box.info-blue { border-bottom: 4px solid #17a2b8; background-color: #f4fbfd; } .stat-box.info-blue .stat-number { color: #17a2b8; }
+        .stat-box.error-cyan { border-bottom: 4px solid #00bcd4; background-color: #e0f7fa; } .stat-box.error-cyan .stat-number { color: #00838f; } 
+        .stat-box.error-purple { border-bottom: 4px solid #7b1fa2; background-color: #f3e5f5; } .stat-box.error-purple .stat-number { color: #7b1fa2; }
+        .stat-box.error-indigo { border-bottom: 4px solid #3f51b5; background-color: #e8eaf6; } .stat-box.error-indigo .stat-number { color: #3f51b5; }
+        .stat-box.error-teal { border-bottom: 4px solid #00796b; background-color: #e0f2f1; } .stat-box.error-teal .stat-number { color: #00796b; }
+    </style>
+</head>
+<body>
+
+    <div class="header-actions">
+        <h1>Baza Produktów - Audyt Danych</h1>
+        <div class="header-buttons-container">
+            <button id="fix-btn" class="pdf-btn btn-green" style="display:none;" onclick="exportFixedJSON()">
+                🔧 Spróbuj naprawić błędy (Pobierz JSON)
+            </button>
+            <button id="pdf-btn" class="pdf-btn btn-red" style="display:none;" onclick="generatePDF()">
+                📄 Generuj Raport PDF
+            </button>
+        </div>
+    </div>
+
+    <div id="loading" class="loading">Pobieranie i analizowanie danych...</div>
+
+    <table id="productsTable" class="display" style="width:100%; display:none;">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Kod Produktu</th>
+                <th>Nazwa Produktu</th>
+                <th>Kod Dostawcy</th>
+                <th>ID Dostawcy</th>
+                <th>Cena Netto</th>
+                <th>Cena Brutto</th>
+                <th>Kody EAN</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+    </table>
+
+    <div id="legend" class="legend-container" style="display:none;">
+        <p style="margin-top: 0; margin-bottom: 10px; font-weight: bold; color: #555;">Filtry (Kliknij w pozycję, aby podliczyć na dole):</p>
+        
+        <div class="legend-item" onclick="showCategory('correct', 'prawidłowych (brak błędów)')">
+            <span class="legend-color-box box-correct"></span>
+            <span class="legend-text">Rekordy <strong>Prawidłowe</strong> (brak błędów, EAN w normie, kod unikalny, poprawne ceny)</span>
+        </div>
+        <div class="legend-item" onclick="showCategory('priceZero', 'z błędem ceny (0 zł)')">
+            <span class="legend-color-box box-brown"></span>
+            <span class="legend-text">Błąd ceny: <strong>Netto lub Brutto wynosi 0 zł</strong> (lub mniej)</span>
+        </div>
+        <div class="legend-item" onclick="showCategory('priceCritical', 'z krytycznym błędem (Netto >= Brutto)')">
+            <span class="legend-color-box box-red-outline"></span>
+            <span class="legend-text">Krytyczny błąd: <strong>Cena Netto jest większa lub równa Brutto</strong></span>
+        </div>
+        <div class="legend-item" onclick="showCategory('vatError', 'z błędem obliczeń VAT')">
+            <span class="legend-color-box box-pink"></span>
+            <span class="legend-text">Błąd VAT: <strong>Cena Brutto nie zgadza się z Netto + 23% VAT</strong></span>
+        </div>
+        <div class="legend-item" onclick="showCategory('codeLetters', 'gdzie kod zawiera tylko litery')">
+            <span class="legend-color-box box-red"></span>
+            <span class="legend-text">Kod Produktu zawiera <strong>wyłącznie litery</strong></span>
+        </div>
+        <div class="legend-item" onclick="showCategory('codeOrange', 'gdzie kod ma format: liczby_litery')">
+            <span class="legend-color-box box-orange"></span>
+            <span class="legend-text">Kod Produktu zawiera <strong>liczby, znak "_" i litery</strong></span>
+        </div>
+        <div class="legend-item" onclick="showCategory('codeGrey', 'gdzie kod pasuje do heurystyki')">
+            <span class="legend-color-box box-grey"></span>
+            <span class="legend-text">Kod Produktu pasuje do <strong>heurystyki wzorców</strong></span>
+        </div>
+        
+        <div class="legend-item" onclick="showCategory('eanMultiArray', 'posiadających tablicę kodów EAN')">
+            <span class="legend-color-box box-blue"></span>
+            <span class="legend-text">Produkt posiada <strong>więcej niż jeden kod EAN</strong> (W formacie systemowym/tablicy)</span>
+        </div>
+        <div class="legend-item" onclick="showCategory('eanMultiStr', 'gdzie wpisano wiele kodów po przecinku')">
+            <span class="legend-color-box box-cyan"></span>
+            <span class="legend-text">Kod EAN zawiera <strong>więcej niż jeden w produkcie</strong> (Wpisane ręcznie po przecinku)</span>
+        </div>
+
+        <div class="legend-item" onclick="showCategory('eanMissing', 'bez kodu EAN')">
+            <span class="legend-color-box box-yellow"></span>
+            <span class="legend-text">Produkt <strong>nie posiada</strong> kodu EAN (Brak EAN)</span>
+        </div>
+        <div class="legend-item" onclick="showCategory('eanBadChars', 'z niepożądanymi znakami w EAN')">
+            <span class="legend-color-box box-purple"></span>
+            <span class="legend-text">Kod EAN zawiera <strong>niepożądane znaki / separatory</strong> (np. litery, myślniki)</span>
+        </div>
+        <div class="legend-item" onclick="showCategory('eanInvalid', 'z błędną sumą kontrolną lub długością EAN')">
+            <span class="legend-color-box box-indigo"></span>
+            <span class="legend-text">Kod EAN ma <strong>złą długość</strong> lub <strong>błędną sumę kontrolną</strong></span>
+        </div>
+        <div class="legend-item" onclick="showCategory('missingSupplier', 'bez danych dostawcy')">
+            <span class="legend-color-box box-teal"></span>
+            <span class="legend-text">Brak <strong>Dostawcy</strong> lub <strong>Kodu Producenta</strong></span>
+        </div>
+        <div class="legend-item" onclick="showCategory('duplicatesProduct', 'ze zduplikowanym kodem produktu')">
+            <span class="legend-color-box box-striped-grey"></span>
+            <span class="legend-text">Kody Produktu, które <strong>powtarzają się</strong> (Duplikaty)</span>
+        </div>
+        <div class="legend-item" onclick="showCategory('duplicatesSupplier', 'ze zduplikowanym kodem dostawcy')">
+            <span class="legend-color-box box-striped-green"></span>
+            <span class="legend-text">Kody Dostawcy, które <strong>powtarzają się</strong> (Ten sam ID i Kod Dostawcy)</span>
+        </div>
+    </div>
+
+    <div id="dynamic-wrapper" class="dynamic-section" style="display:none;">
+        <p id="dynamic-summary-text" style="color: #666; font-style: italic;">Wybierz filtr z legendy powyżej.</p>
+        <div id="dynamic-container" style="display: none;">
+            <h2 id="dynamic-title">Lista Wybranych Rekordów</h2>
+            <table id="dynamicTable" class="display" style="width:100%;">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Kod Produktu</th>
+                        <th>Kod Dostawcy</th>
+                        <th>Netto</th>
+                        <th>Brutto</th>
+                        <th>EAN</th>
+                    </tr>
+                </thead>
+                <tbody id="dynamicTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="statistics-panel" class="detailed-stats-panel" style="display:none;">
+        <div class="stats-row">
+            <div class="stats-section">
+                <h3>Ogólne Podsumowanie</h3>
+                <div class="stat-grid">
+                    <div class="stat-box total">
+                        <div id="stat-total" class="stat-number">0</div>
+                        <div class="stat-label">Wszystkie</div>
+                    </div>
+                    <div class="stat-box correct">
+                        <div id="stat-correct" class="stat-number">0</div>
+                        <div class="stat-label">Poprawne</div>
+                    </div>
+                    <div class="stat-box duplicates">
+                        <div id="stat-dup-prod" class="stat-number">0</div>
+                        <div class="stat-label">Duplikat Produktu</div>
+                    </div>
+                    <div class="stat-box dup-sup">
+                        <div id="stat-dup-sup" class="stat-number">0</div>
+                        <div class="stat-label">Duplikat Dostawcy</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-section">
+                <h3>Błędy Cenowe</h3>
+                <div class="stat-grid">
+                    <div class="stat-box error-brown">
+                        <div id="stat-price-zero" class="stat-number">0</div>
+                        <div class="stat-label">Cena 0 zł</div>
+                    </div>
+                    <div class="stat-box error-red-outline">
+                        <div id="stat-price-crit" class="stat-number">0</div>
+                        <div class="stat-label">Netto >= Brutto</div>
+                    </div>
+                    <div class="stat-box error-pink">
+                        <div id="stat-vat" class="stat-number">0</div>
+                        <div class="stat-label">Błąd VAT</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-row">
+            <div class="stats-section">
+                <h3>Błędy w Kodach Produktu</h3>
+                <div class="stat-grid">
+                    <div class="stat-box error-red">
+                        <div id="stat-code-red" class="stat-number">0</div>
+                        <div class="stat-label">Tylko Litery</div>
+                    </div>
+                    <div class="stat-box error-orange">
+                        <div id="stat-code-orange" class="stat-number">0</div>
+                        <div class="stat-label">Liczby+Litery</div>
+                    </div>
+                    <div class="stat-box error-grey">
+                        <div id="stat-code-grey" class="stat-number">0</div>
+                        <div class="stat-label">Heurystyka</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-section">
+                <h3>EAN i Dostawcy</h3>
+                <div class="stat-grid">
+                    <div class="stat-box warning-yellow">
+                        <div id="stat-ean-missing" class="stat-number">0</div>
+                        <div class="stat-label">Brak EAN</div>
+                    </div>
+                    <div class="stat-box info-blue">
+                        <div id="stat-ean-multi-arr" class="stat-number">0</div>
+                        <div class="stat-label">EAN: Tablica</div>
+                    </div>
+                    <div class="stat-box error-cyan">
+                        <div id="stat-ean-multi-str" class="stat-number">0</div>
+                        <div class="stat-label">Więcej niż 1</div>
+                    </div>
+                    <div class="stat-box error-purple">
+                        <div id="stat-ean-bad-chars" class="stat-number">0</div>
+                        <div class="stat-label">Złe Znaki</div>
+                    </div>
+                    <div class="stat-box error-indigo">
+                        <div id="stat-ean-invalid" class="stat-number">0</div>
+                        <div class="stat-label">Zła Suma EAN</div>
+                    </div>
+                    <div class="stat-box error-teal">
+                        <div id="stat-sup-missing" class="stat-number">0</div>
+                        <div class="stat-label">Brak Dostawcy</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
+    <script>
+        const categoriesData = {
+            correct: [], priceZero: [], priceCritical: [], vatError: [], 
+            codeLetters: [], codeOrange: [], codeGrey: [], 
+            eanMultiArray: [], eanMultiStr: [], eanMissing: [], eanBadChars: [], eanInvalid: [], 
+            missingSupplier: [], duplicatesProduct: [], duplicatesSupplier: []
+        };
+        
+        let totalRecordsCount = 0; 
+        let globalRawProducts = []; // Do napraw
+        
+        // Zmienne do zliczania statystyk dostawców dla PDF
+        let globalSupplierStats = {};
+        let globalTotalErrors = 0;
+
+        function isValidEAN(ean) {
+            const eanString = String(ean).trim();
+            if (!/^\d{8}$|^\d{12,14}$/.test(eanString)) return false;
+            
+            const digits = eanString.slice(0, -1).split('').map(Number);
+            const expectedCheckDigit = Number(eanString.slice(-1));
+            let sum = 0;
+            
+            const reversedDigits = [...digits].reverse();
+            reversedDigits.forEach((digit, index) => {
+                const position = index + 1; 
+                if (position % 2 !== 0) sum += digit * 3;
+                else sum += digit * 1;
+            });
+            
+            const modulo10 = sum % 10;
+            let calculatedCheck = 10 - modulo10;
+            if (calculatedCheck === 10) calculatedCheck = 0;
+            
+            return calculatedCheck === expectedCheckDigit;
+        }
+
+        async function fetchProducts() {
+            try {
+                const response = await fetch('/api/products');
+                const products = await response.json();
+                
+                totalRecordsCount = products.length;
+                globalRawProducts = products;
+
+                const tableBody = document.getElementById('tableBody');
+                
+                const onlyLettersRegex = /^[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ]+$/;
+                const numbersUnderscoreLettersRegex = /\d+_[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ]+/;
+                const heuristicRegex = /^[A-Za-z0-9]+[-.\/][A-Za-z0-9]+$/; 
+
+                const productCodeCounts = {};
+                const supplierCodeCounts = {};
+                
+                products.forEach(p => {
+                    let pCode = String(p.product_code || '').trim();
+                    let sCode = String(p.supplier_code || '').trim();
+                    if (pCode) productCodeCounts[pCode] = (productCodeCounts[pCode] || 0) + 1;
+                    if (sCode) supplierCodeCounts[sCode] = (supplierCodeCounts[sCode] || 0) + 1;
+                });
+
+                // Inicjalizacja dla per-dostawca statystyk PDF
+                globalSupplierStats = {};
+                globalTotalErrors = 0;
+
+                products.forEach(product => {
+                    let isCorrectRecord = true; 
+                    let productErrors = []; // Lista błędów tego konkretnego produktu dla PDF statystyk dostawcy
+
+                    let productCodeValue = String(product.product_code || '').trim();
+                    let supplierCode = String(product.supplier_code || '').trim();
+                    let supplierId = String(product.supplier_id || '').trim();
+                    
+                    let netPrice = parseFloat(product.net_price) || 0;
+                    let grossPrice = parseFloat(product.gross_price) || 0;
+
+                    let hasMultipleEansArray = false;
+                    let hasMultipleEansStr = false;
+                    let isEanMissing = false; 
+                    let isEanBadChars = false;
+                    let isEanInvalid = false;
+                    let eanData = product.ean_codes || product.ean; 
+                    let eanDisplay = '-'; 
+                    
+                    let parsedEans = [];
+                    if (eanData) {
+                        if (Array.isArray(eanData)) {
+                            parsedEans = eanData.map(String);
+                            if (parsedEans.length > 1) hasMultipleEansArray = true;
+                        } else if (typeof eanData === 'string') {
+                            if (eanData.trim().startsWith('[')) {
+                                try {
+                                    const parsed = JSON.parse(eanData);
+                                    if (Array.isArray(parsed)) {
+                                        parsedEans = parsed.map(String);
+                                        if (parsedEans.length > 1) hasMultipleEansArray = true;
+                                    } else {
+                                        parsedEans = [eanData];
+                                    }
+                                } catch (e) { parsedEans = [eanData]; }
+                            } else {
+                                parsedEans = eanData.split(',').map(s => s.trim());
+                                if (parsedEans.length > 1) hasMultipleEansStr = true; 
+                            }
+                        }
+                    }
+                    
+                    parsedEans = parsedEans.filter(e => e.trim() !== '');
+
+                    if (parsedEans.length === 0) {
+                        isEanMissing = true;
+                        eanDisplay = 'Brak EAN';
+                    } else {
+                        eanDisplay = parsedEans.join(', ');
+                        for (let eanToTest of parsedEans) {
+                            let eanStr = String(eanToTest).trim();
+                            if (/[^\d]/.test(eanStr)) {
+                                isEanBadChars = true;
+                            } else if (!isValidEAN(eanStr)) {
+                                isEanInvalid = true;
+                            }
+                        }
+                    }
+                    product.formatted_ean = eanDisplay;
+
+                    const row = document.createElement('tr');
+
+                    let isPriceZero = netPrice <= 0 || grossPrice <= 0;
+                    let isPriceCritical = netPrice > 0 && netPrice >= grossPrice;
+                    let expectedGross = netPrice * 1.23;
+                    let isVatError = netPrice > 0 && Math.abs(grossPrice - expectedGross) > 0.05;
+
+                    let isMissingSupplier = !supplierCode || !supplierId || supplierId === '0';
+                    let isSupplierDuplicate = supplierCode && supplierCodeCounts[supplierCode] > 1;
+                    let isProductDuplicate = productCodeValue && productCodeCounts[productCodeValue] > 1;
+
+                    // Logika klasyfikacji i zapisu błędów
+                    if (isPriceZero) { row.classList.add('highlight-brown'); productErrors.push("Cena 0 zl"); categoriesData.priceZero.push(product); isCorrectRecord = false; }
+                    else if (isPriceCritical) { row.classList.add('highlight-red-outline'); productErrors.push("Netto >= Brutto"); categoriesData.priceCritical.push(product); isCorrectRecord = false; }
+                    else if (isVatError) { row.classList.add('highlight-pink'); productErrors.push("Blad 23% VAT"); categoriesData.vatError.push(product); isCorrectRecord = false; }
+                    
+                    if (isMissingSupplier) { row.classList.add('highlight-teal'); productErrors.push("Brak dostawcy"); categoriesData.missingSupplier.push(product); isCorrectRecord = false; }
+                    else if (isEanBadChars) { row.classList.add('highlight-purple'); productErrors.push("Zle znaki EAN"); categoriesData.eanBadChars.push(product); isCorrectRecord = false; }
+                    else if (isEanInvalid) { row.classList.add('highlight-indigo'); productErrors.push("Zla suma/dlugosc EAN"); categoriesData.eanInvalid.push(product); isCorrectRecord = false; }
+                    else if (productCodeValue.length > 0 && onlyLettersRegex.test(productCodeValue)) { row.classList.add('highlight-red'); productErrors.push("Kod: Tylko litery"); categoriesData.codeLetters.push(product); isCorrectRecord = false; }
+                    else if (productCodeValue.length > 0 && numbersUnderscoreLettersRegex.test(productCodeValue)) { row.classList.add('highlight-orange'); productErrors.push("Kod: Liczby+Litery"); categoriesData.codeOrange.push(product); isCorrectRecord = false; }
+                    else if (productCodeValue.length > 0 && heuristicRegex.test(productCodeValue)) { row.classList.add('highlight-grey'); productErrors.push("Kod: Heurystyka"); categoriesData.codeGrey.push(product); isCorrectRecord = false; }
+                    else if (hasMultipleEansStr) { row.classList.add('highlight-cyan'); productErrors.push("Wiele EAN (Przecinek)"); categoriesData.eanMultiStr.push(product); isCorrectRecord = false; } 
+                    else if (hasMultipleEansArray) { row.classList.add('highlight-blue'); productErrors.push("Wiele EAN (Tablica)"); categoriesData.eanMultiArray.push(product); isCorrectRecord = false; } 
+                    else if (isEanMissing) { row.classList.add('highlight-yellow'); productErrors.push("Brak EAN"); categoriesData.eanMissing.push(product); isCorrectRecord = false; }
+
+                    if (isProductDuplicate) { productErrors.push("Duplikat produktu"); categoriesData.duplicatesProduct.push(product); isCorrectRecord = false; }
+                    if (isSupplierDuplicate) { productErrors.push("Duplikat dostawcy"); categoriesData.duplicatesSupplier.push(product); isCorrectRecord = false; }
+
+                    if (productCodeValue.length === 0) { productErrors.push("Brak kodu produktu"); isCorrectRecord = false; }
+
+                    if (isCorrectRecord) { categoriesData.correct.push(product); }
+
+                    // --- ZBIERANIE STATYSTYK DLA PDF ---
+                    let supplierKey = supplierCode ? supplierCode : (supplierId && supplierId !== '0' ? supplierId : "BRAK_DANYCH");
+                    if (!globalSupplierStats[supplierKey]) {
+                        globalSupplierStats[supplierKey] = {
+                            totalProducts: 0,
+                            totalErrors: 0,
+                            errorsByType: {}
+                        };
+                    }
+                    globalSupplierStats[supplierKey].totalProducts++;
+                    
+                    if (productErrors.length > 0) {
+                        globalSupplierStats[supplierKey].totalErrors += productErrors.length;
+                        globalTotalErrors += productErrors.length;
+                        productErrors.forEach(err => {
+                            globalSupplierStats[supplierKey].errorsByType[err] = (globalSupplierStats[supplierKey].errorsByType[err] || 0) + 1;
+                        });
+                    }
+
+                    row.innerHTML = `
+                        <td>${product.product_id}</td>
+                        <td>${productCodeValue || '-'}</td>
+                        <td>${product.product_name || '-'}</td>
+                        <td>${supplierCode || '-'}</td>
+                        <td>${supplierId || '-'}</td>
+                        <td>${netPrice.toFixed(2)} zł</td>
+                        <td>${grossPrice.toFixed(2)} zł</td>
+                        <td><strong>${eanDisplay}</strong></td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+
+                document.getElementById('stat-total').innerText = products.length;
+                document.getElementById('stat-correct').innerText = categoriesData.correct.length;
+                document.getElementById('stat-dup-prod').innerText = categoriesData.duplicatesProduct.length;
+                document.getElementById('stat-dup-sup').innerText = categoriesData.duplicatesSupplier.length;
+                document.getElementById('stat-price-zero').innerText = categoriesData.priceZero.length;
+                document.getElementById('stat-price-crit').innerText = categoriesData.priceCritical.length;
+                document.getElementById('stat-vat').innerText = categoriesData.vatError.length;
+                document.getElementById('stat-code-red').innerText = categoriesData.codeLetters.length;
+                document.getElementById('stat-code-orange').innerText = categoriesData.codeOrange.length;
+                document.getElementById('stat-code-grey').innerText = categoriesData.codeGrey.length;
+                document.getElementById('stat-ean-missing').innerText = categoriesData.eanMissing.length;
+                document.getElementById('stat-ean-multi-arr').innerText = categoriesData.eanMultiArray.length;
+                document.getElementById('stat-ean-multi-str').innerText = categoriesData.eanMultiStr.length; 
+                document.getElementById('stat-ean-bad-chars').innerText = categoriesData.eanBadChars.length;
+                document.getElementById('stat-ean-invalid').innerText = categoriesData.eanInvalid.length;
+                document.getElementById('stat-sup-missing').innerText = categoriesData.missingSupplier.length;
+
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('productsTable').style.display = 'table';
+                document.getElementById('legend').style.display = 'block';
+                document.getElementById('dynamic-wrapper').style.display = 'block';
+                document.getElementById('statistics-panel').style.display = 'flex'; 
+                document.getElementById('pdf-btn').style.display = 'inline-flex';
+                document.getElementById('fix-btn').style.display = 'inline-flex';
+
+                $('#productsTable').DataTable({
+                    "lengthMenu": [10, 25, 50, 100],
+                    "pageLength": 10,
+                    "language": { "url": "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pl.json" }
+                });
+
+            } catch (error) {
+                console.error('Błąd:', error);
+                document.getElementById('loading').innerText = 'Wystąpił błąd podczas pobierania danych.';
+            }
+        }
+
+        window.showCategory = function(type, reasonText) {
+            const data = categoriesData[type];
+            const summaryText = document.getElementById('dynamic-summary-text');
+            const container = document.getElementById('dynamic-container');
+
+            summaryText.innerHTML = `Znaleziono rekordów ${reasonText}: <a id="dynamic-count-link" class="dynamic-link">${data.length}</a>`;
+            container.style.display = 'none';
+
+            const linkElement = document.getElementById('dynamic-count-link');
+            const newLinkElement = linkElement.cloneNode(true);
+            linkElement.parentNode.replaceChild(newLinkElement, linkElement);
+
+            newLinkElement.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (container.style.display === 'none' && data.length > 0) {
+                    container.style.display = 'block';
+                    renderDynamicTable(data);
+                } else {
+                    container.style.display = 'none';
+                }
+            });
+        };
+
+        function renderDynamicTable(data) {
+            if ($.fn.DataTable.isDataTable('#dynamicTable')) {
+                $('#dynamicTable').DataTable().destroy();
+            }
+            const tbody = document.getElementById('dynamicTableBody');
+            tbody.innerHTML = '';
+            
+            data.forEach(product => {
+                const row = document.createElement('tr');
+                let netPrice = parseFloat(product.net_price) || 0;
+                let grossPrice = parseFloat(product.gross_price) || 0;
+
+                row.innerHTML = `
+                    <td>${product.product_id}</td>
+                    <td><strong>${product.product_code || '-'}</strong></td>
+                    <td>${product.supplier_code || '-'}</td>
+                    <td>${netPrice.toFixed(2)} zł</td>
+                    <td>${grossPrice.toFixed(2)} zł</td>
+                    <td><span style="color: #444; font-weight: bold;">${product.formatted_ean || '-'}</span></td>
+                `;
+                tbody.appendChild(row);
+            });
+            $('#dynamicTable').DataTable({
+                "pageLength": 10,
+                "language": { "url": "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pl.json" }
+            });
+        }
+
+        // --- AUTONAPRAWA ---
+        function exportFixedJSON() {
+            const fixedRecordsToExport = [];
+
+            globalRawProducts.forEach(originalProduct => {
+                let p = JSON.parse(JSON.stringify(originalProduct));
+                let repairLog = [];
+                let hasErrorsOrModifications = false;
+
+                let eanData = p.ean_codes || p.ean; 
+                let parsedEans = [];
+                if (eanData) {
+                    if (Array.isArray(eanData)) {
+                        parsedEans = eanData.map(String);
+                    } else if (typeof eanData === 'string') {
+                        if (eanData.trim().startsWith('[')) {
+                            try {
+                                const parsed = JSON.parse(eanData);
+                                if (Array.isArray(parsed)) parsedEans = parsed.map(String);
+                                else parsedEans = [eanData];
+                            } catch (e) { parsedEans = [eanData]; }
+                        } else {
+                            parsedEans = eanData.split(',').map(s => s.trim());
+                        }
+                    }
+                }
+                parsedEans = parsedEans.filter(e => e.trim() !== '');
+
+                let validEans = [];
+                let hasBadChars = false;
+                
+                parsedEans.forEach(eanStr => {
+                    let cleaned = eanStr.replace(/[^\d]/g, ''); 
+                    if (cleaned !== eanStr) hasBadChars = true;
+                    if (isValidEAN(cleaned)) validEans.push(cleaned);
+                });
+
+                if (parsedEans.length === 0) {
+                    hasErrorsOrModifications = true;
+                    repairLog.push("Brak kodu EAN (Wymaga recznej interwencji)");
+                } else if (parsedEans.length > 1 || hasBadChars || validEans.length < parsedEans.length) {
+                    hasErrorsOrModifications = true;
+                    if (validEans.length > 0) {
+                        p.ean_codes = [validEans[0]]; 
+                        if (parsedEans.length > 1) repairLog.push("Usunieto nadmiarowe kody EAN, pozostawiono pierwszy poprawny");
+                        if (hasBadChars) repairLog.push("Oczyszczono EAN z niepozadanych liter i znakow specjalnych");
+                    } else {
+                        repairLog.push("Bledny EAN (Zla suma kontrolna/dlugosc), wymaga recznej weryfikacji");
+                    }
+                }
+
+                let net = parseFloat(p.net_price) || 0;
+                let gross = parseFloat(p.gross_price) || 0;
+                let expectedGross = net * 1.23;
+
+                if (net <= 0 && gross <= 0) {
+                    hasErrorsOrModifications = true;
+                    repairLog.push("Cena Netto i Brutto to 0 zl (Wymaga recznej weryfikacji)");
+                } else if (net > 0 && Math.abs(gross - expectedGross) > 0.05) {
+                    hasErrorsOrModifications = true;
+                    p.gross_price = expectedGross.toFixed(2);
+                    repairLog.push("Przeliczono i naprawiono cene Brutto (+23% VAT)");
+                } else if (net > 0 && net >= gross) {
+                    hasErrorsOrModifications = true;
+                    p.gross_price = expectedGross.toFixed(2);
+                    repairLog.push("Krytyczny blad: Cena Netto byla wyzsza od Brutto. Przeliczono Brutto");
+                }
+
+                let sCode = String(p.supplier_code || '').trim();
+                if (!sCode) {
+                    hasErrorsOrModifications = true;
+                    p.supplier_code = "BRAK_DANYCH";
+                    repairLog.push("Wstawiono znacznik 'BRAK_DANYCH' w puste pole kodu dostawcy");
+                }
+
+                if (hasErrorsOrModifications) {
+                    p.adnotacje_poprawek = repairLog; 
+                    delete p.formatted_ean; 
+                    fixedRecordsToExport.push(p);
+                }
+            });
+
+            if (fixedRecordsToExport.length === 0) {
+                alert("Super! Skrypt nie znalazł żadnych błędów do naprawy.");
+                return;
+            }
+
+            const jsonString = JSON.stringify(fixedRecordsToExport, null, 4);
+            const blob = new Blob([jsonString], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "naprawione_produkty_audyt.json";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+
+        // --- ROZBUDOWANY GENERATOR PDF ---
+        function generatePDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const removePl = (str) => {
+                const map = { 'ą':'a', 'ć':'c', 'ę':'e', 'ł':'l', 'ń':'n', 'ó':'o', 'ś':'s', 'ź':'z', 'ż':'z', 'Ą':'A', 'Ć':'C', 'Ę':'E', 'Ł':'L', 'Ń':'N', 'Ó':'O', 'Ś':'S', 'Ź':'Z', 'Ż':'Z' };
+                return str.replace(/[ąćęłńóśźżĄĆĘŁŃÓŚŹŻ]/g, match => map[match]);
+            };
+
+            doc.setFontSize(20);
+            doc.text(removePl("Raport z Audytu Bazy Produktow"), 14, 20);
+            doc.setFontSize(11);
+            doc.setTextColor(100);
+            doc.text(removePl(`Data wygenerowania: ${new Date().toLocaleString('pl-PL')}`), 14, 28);
+            
+            // --- Strona 1: Statystyki Ogólne ---
+            const statsData = [
+                ['Ogolne', 'Wszystkie produkty', totalRecordsCount],
+                ['Ogolne', 'Calkowicie poprawne rekordy', categoriesData.correct.length],
+                ['Duplikaty', 'Zduplikowane kody produktu', categoriesData.duplicatesProduct.length],
+                ['Duplikaty', 'Zduplikowane kody dostawcy', categoriesData.duplicatesSupplier.length],
+                ['Bledy Cenowe', 'Cena Netto lub Brutto wynosi 0 zl', categoriesData.priceZero.length],
+                ['Bledy Cenowe', 'Krytyczny blad (Netto >= Brutto)', categoriesData.priceCritical.length],
+                ['Bledy Cenowe', 'Blad wyliczenia 23% VAT', categoriesData.vatError.length],
+                ['Bledy Kodow', 'Kod produktu ma tylko litery', categoriesData.codeLetters.length],
+                ['Bledy Kodow', 'Kod to liczby, znak _ i litery', categoriesData.codeOrange.length],
+                ['Bledy Kodow', 'Kod pasuje do heurystyki (np. . - /)', categoriesData.codeGrey.length],
+                ['EAN i Dostawcy', 'Calkowity brak kodu EAN', categoriesData.eanMissing.length],
+                ['EAN i Dostawcy', 'Produkt ma wiele kodow EAN (Tablica)', categoriesData.eanMultiArray.length],
+                ['EAN i Dostawcy', 'Wiele kodow EAN wpisanych recznie', categoriesData.eanMultiStr.length], 
+                ['EAN i Dostawcy', 'Kod zawiera niepozadane znaki lub litery', categoriesData.eanBadChars.length], 
+                ['EAN i Dostawcy', 'Bledna suma kontrolna lub dlugosc', categoriesData.eanInvalid.length], 
+                ['EAN i Dostawcy', 'Brak przypisanego Dostawcy', categoriesData.missingSupplier.length],
+            ];
+
+            doc.autoTable({
+                startY: 38,
+                head: [[removePl('Kategoria'), removePl('Rodzaj Bledu / Statystyki'), removePl('Liczba Rekordow')]],
+                body: statsData.map(row => [removePl(row[0]), removePl(row[1]), row[2]]),
+                theme: 'striped',
+                headStyles: { fillColor: [220, 53, 69] },
+                styles: { font: 'helvetica', fontSize: 10 },
+                columnStyles: { 2: { halign: 'center', fontStyle: 'bold' } }
+            });
+
+            // --- Strona 2: Statystyki Dostawców (w poziomie / landscape) ---
+            doc.addPage("a4", "landscape");
+            doc.setFontSize(16);
+            doc.setTextColor(50);
+            doc.text(removePl("Szczegolowe Statystyki na Dostawce"), 14, 20);
+
+            // Generowanie danych do drugiej tabeli PDF
+            const supplierTableData = Object.keys(globalSupplierStats).map(key => {
+                const stat = globalSupplierStats[key];
+                const errorsPer100 = stat.totalProducts > 0 ? ((stat.totalErrors / stat.totalProducts) * 100).toFixed(2) : 0;
+                const shareOfErrors = globalTotalErrors > 0 ? ((stat.totalErrors / globalTotalErrors) * 100).toFixed(2) + '%' : '0%';
+                
+                // Sortowanie i wybieranie TOP 5 błędów
+                const top5 = Object.entries(stat.errorsByType)
+                                   .sort((a, b) => b[1] - a[1])
+                                   .slice(0, 5)
+                                   .map(e => `${removePl(e[0])} (${e[1]})`)
+                                   .join('\n');
+                                   
+                return [
+                    removePl(key),
+                    stat.totalProducts,
+                    stat.totalErrors,
+                    errorsPer100,
+                    shareOfErrors,
+                    top5
+                ];
+            });
+
+            // Sortowanie malejąco po całkowitej liczbie błędów u dostawcy
+            supplierTableData.sort((a, b) => b[2] - a[2]);
+
+            // Usuwamy dostawców, którzy mają 0 błędów, aby skupić się na najgorszych (opcjonalnie)
+            const filteredSupplierData = supplierTableData.filter(row => row[2] > 0);
+
+            doc.autoTable({
+                startY: 28,
+                head: [[
+                    removePl('Kod Dostawcy / ID'), 
+                    removePl('Liczba Towarow'), 
+                    removePl('Liczba Bledow'), 
+                    removePl('Wskaznik (Bledy/100 tow.)'), 
+                    removePl('% Udzial w Bledach'), 
+                    removePl('TOP 5 Najczestszych Bledow')
+                ]],
+                body: filteredSupplierData,
+                theme: 'grid',
+                headStyles: { fillColor: [0, 123, 255] }, // Niebieski nagłówek
+                styles: { font: 'helvetica', fontSize: 9 },
+                columnStyles: {
+                    0: { cellWidth: 35, fontStyle: 'bold' },
+                    1: { halign: 'center', cellWidth: 25 },
+                    2: { halign: 'center', cellWidth: 25, fontStyle: 'bold', textColor: [220, 53, 69] },
+                    3: { halign: 'center', cellWidth: 35 },
+                    4: { halign: 'center', cellWidth: 35 },
+                    5: { cellWidth: 'auto' } // Ucięcie nadmiaru miejsca
+                }
+            });
+
+            doc.save('Raport_Audytu_Bazy_Danych.pdf');
+        }
+
+        fetchProducts();
+    </script>
+</body>
+</html>
