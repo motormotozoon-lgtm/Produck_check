@@ -13,23 +13,29 @@
         
         /* --- NAGŁÓWEK I PRZYCISKI --- */
         .header-actions {
-            display: flex; justify-content: space-between; align-items: center;
+            display: flex; flex-direction: column; align-items: flex-start; gap: 15px;
             margin-bottom: 20px; border-bottom: 2px solid #ddd; padding-bottom: 15px;
         }
+        .header-actions h1 { margin: 0; }
         .header-buttons-container {
-            display: flex; gap: 10px;
+            display: flex; gap: 10px; flex-wrap: wrap;
         }
         .pdf-btn {
-            color: white; border: none; padding: 12px 20px;
-            font-size: 15px; font-weight: bold; border-radius: 6px; cursor: pointer;
+            color: white; border: none; padding: 10px 18px;
+            font-size: 13px; font-weight: bold; border-radius: 6px; cursor: pointer;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: background-color 0.2s, transform 0.1s;
-            display: inline-flex; align-items: center;
+            display: inline-flex; align-items: center; justify-content: center;
         }
-        .pdf-btn:active { transform: translateY(2px); }
-        .btn-red { background-color: #dc3545; }
-        .btn-red:hover { background-color: #c82333; }
-        .btn-green { background-color: #28a745; }
-        .btn-green:hover { background-color: #218838; }
+        .pdf-btn:active:not(:disabled) { transform: translateY(2px); }
+        .pdf-btn:disabled { opacity: 0.8; cursor: not-allowed; } 
+        
+        .btn-red { background-color: #dc3545; } .btn-red:hover:not(:disabled) { background-color: #c82333; }
+        .btn-green { background-color: #28a745; } .btn-green:hover:not(:disabled) { background-color: #218838; }
+        .btn-blue { background-color: #007bff; } .btn-blue:hover:not(:disabled) { background-color: #0056b3; }
+        .btn-purple { background-color: #6f42c1; } .btn-purple:hover:not(:disabled) { background-color: #5a32a3; }
+        .btn-orange { background-color: #fd7e14; } .btn-orange:hover:not(:disabled) { background-color: #e86e04; }
+        .btn-teal { background-color: #20c997; } .btn-teal:hover:not(:disabled) { background-color: #1aa179; }
+        .btn-gold { background-color: #ffc107; color: #212529; } .btn-gold:hover:not(:disabled) { background-color: #e0a800; } /* Nowy kolor */
 
         table.dataTable { background-color: #fff; margin-top: 20px !important; }
         table.dataTable thead th { background-color: #007BFF; color: white; border-bottom: none; }
@@ -52,7 +58,7 @@
         /* --- LEGENDA --- */
         .legend-container {
             margin-top: 15px; padding: 15px; background-color: #fff;
-            border: 1px solid #ddd; display: inline-block; border-radius: 4px;
+            border: 1px solid #ddd; display: inline-block; border-radius: 4px; width: 100%; box-sizing: border-box;
         }
         .legend-item {
             margin-bottom: 6px; padding: 4px 6px; border-radius: 4px;
@@ -60,8 +66,7 @@
         }
         .legend-item:hover { background-color: #f0f0f5; }
         .legend-color-box {
-            display: inline-block; width: 18px; height: 18px;
-            margin-right: 10px; border: 1px solid #333; flex-shrink: 0;
+            display: inline-block; width: 18px; height: 18px; margin-right: 10px; border: 1px solid #333; flex-shrink: 0;
         }
         .legend-text { font-size: 13px; color: #444; }
 
@@ -82,33 +87,19 @@
         .box-striped-green { background: repeating-linear-gradient(45deg, #fff, #fff 4px, #a5d6a7 4px, #a5d6a7 8px); border-color: #388e3c; }
 
         .dynamic-section {
-            margin-top: 20px; padding: 20px; background-color: #fff;
-            border: 1px solid #ddd; border-radius: 4px; min-height: 50px;
+            margin-top: 20px; padding: 20px; background-color: #fff; border: 1px solid #ddd; border-radius: 4px; min-height: 50px;
         }
-        .dynamic-link {
-            font-size: 1.2em; font-weight: bold; color: #007BFF;
-            text-decoration: none; cursor: pointer; border-bottom: 1px dashed #007BFF;
-        }
+        .dynamic-link { font-size: 1.2em; font-weight: bold; color: #007BFF; text-decoration: none; cursor: pointer; border-bottom: 1px dashed #007BFF; }
         .dynamic-link:hover { color: #0056b3; border-bottom: 1px solid #0056b3; }
         #dynamic-container { margin-top: 20px; border-top: 2px solid #eee; padding-top: 15px; }
 
         /* --- DASHBOARD STATYSTYK --- */
         .detailed-stats-panel { margin-top: 30px; display: flex; flex-direction: column; gap: 20px; }
         .stats-row { display: flex; gap: 20px; flex-wrap: wrap; }
-        .stats-section {
-            flex: 1; background: #fff; padding: 15px 20px 20px 20px;
-            border-radius: 8px; border: 1px solid #ddd;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05); min-width: 300px;
-        }
-        .stats-section h3 {
-            margin-top: 0; margin-bottom: 15px; font-size: 1.1em;
-            color: #555; border-bottom: 2px solid #eee; padding-bottom: 10px; text-transform: uppercase;
-        }
+        .stats-section { flex: 1; background: #fff; padding: 15px 20px 20px 20px; border-radius: 8px; border: 1px solid #ddd; box-shadow: 0 4px 6px rgba(0,0,0,0.05); min-width: 300px; }
+        .stats-section h3 { margin-top: 0; margin-bottom: 15px; font-size: 1.1em; color: #555; border-bottom: 2px solid #eee; padding-bottom: 10px; text-transform: uppercase; }
         .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 15px; }
-        .stat-box {
-            text-align: center; padding: 15px 10px; background-color: #f8f9fa;
-            border: 1px solid #e9ecef; border-radius: 6px; transition: transform 0.2s, box-shadow 0.2s;
-        }
+        .stat-box { text-align: center; padding: 15px 10px; background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 6px; transition: transform 0.2s, box-shadow 0.2s; }
         .stat-box:hover { transform: translateY(-3px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
         .stat-number { font-size: 2em; font-weight: bold; margin-bottom: 5px; }
         .stat-label { font-size: 0.85em; color: #666; font-weight: bold; }
@@ -139,16 +130,28 @@
     <div class="header-actions">
         <h1>Baza Produktów - Audyt Danych</h1>
         <div class="header-buttons-container">
-            <button id="fix-btn" class="pdf-btn btn-green" style="display:none;" onclick="exportFixedJSON()">
-                🔧 Spróbuj naprawić błędy (Pobierz JSON)
+            <button id="dict-btn" class="pdf-btn btn-orange" style="display:none;" onclick="startProcess('dict-btn', 'Generowanie JSON', executeStrictDictionaryFix)">
+                📦 Uzupełnij brakujące Kody Dostawców wg ID
             </button>
-            <button id="pdf-btn" class="pdf-btn btn-red" style="display:none;" onclick="generatePDF()">
+            <button id="adv-supplier-btn" class="pdf-btn btn-purple" style="display:none;" onclick="startProcess('adv-supplier-btn', 'Generowanie JSON', executeAdvancedSupplierFix)">
+                🪪 Uzupełnij Błędne (Kod = ID) Dostawców
+            </button>
+            <button id="multi-ean-btn" class="pdf-btn btn-teal" style="display:none;" onclick="startProcess('multi-ean-btn', 'Filtrowanie EAN', executeFixMultiEans)">
+                ✂️ Wyczyść Multi-EAN (Zostaw Poprawne)
+            </button>
+            <button id="price-btn" class="pdf-btn btn-gold" style="display:none;" onclick="startProcess('price-btn', 'Przeliczanie cen', executeFixMissingPrices)">
+                💰 Uzupełnij Brakującą Cenę (23% VAT)
+            </button>
+            <button id="fix-btn" class="pdf-btn btn-green" style="display:none;" onclick="startProcess('fix-btn', 'Generowanie JSON', executeExportFixedJSON)">
+                🔧 Napraw pozostałe błędy (Ceny/EAN)
+            </button>
+            <button id="pdf-btn" class="pdf-btn btn-red" style="display:none;" onclick="startProcess('pdf-btn', 'Tworzenie PDF', executeGeneratePDF)">
                 📄 Generuj Raport PDF
             </button>
         </div>
     </div>
 
-    <div id="loading" class="loading">Pobieranie i analizowanie danych...</div>
+    <div id="loading" class="loading">Pobieranie i wirtualizacja danych (Odporność na 200 tys. rekordów)...</div>
 
     <table id="productsTable" class="display" style="width:100%; display:none;">
         <thead>
@@ -163,7 +166,6 @@
                 <th>Kody EAN</th>
             </tr>
         </thead>
-        <tbody id="tableBody"></tbody>
     </table>
 
     <div id="legend" class="legend-container" style="display:none;">
@@ -197,7 +199,6 @@
             <span class="legend-color-box box-grey"></span>
             <span class="legend-text">Kod Produktu pasuje do <strong>heurystyki wzorców</strong></span>
         </div>
-        
         <div class="legend-item" onclick="showCategory('eanMultiArray', 'posiadających tablicę kodów EAN')">
             <span class="legend-color-box box-blue"></span>
             <span class="legend-text">Produkt posiada <strong>więcej niż jeden kod EAN</strong> (W formacie systemowym/tablicy)</span>
@@ -206,7 +207,6 @@
             <span class="legend-color-box box-cyan"></span>
             <span class="legend-text">Kod EAN zawiera <strong>więcej niż jeden w produkcie</strong> (Wpisane ręcznie po przecinku)</span>
         </div>
-
         <div class="legend-item" onclick="showCategory('eanMissing', 'bez kodu EAN')">
             <span class="legend-color-box box-yellow"></span>
             <span class="legend-text">Produkt <strong>nie posiada</strong> kodu EAN (Brak EAN)</span>
@@ -221,7 +221,7 @@
         </div>
         <div class="legend-item" onclick="showCategory('missingSupplier', 'bez danych dostawcy')">
             <span class="legend-color-box box-teal"></span>
-            <span class="legend-text">Brak <strong>Dostawcy</strong> lub <strong>Kodu Producenta</strong></span>
+            <span class="legend-text">Brak <strong>Dostawcy</strong> LUB Kod jest identyczny z ID (Kod = ID)</span>
         </div>
         <div class="legend-item" onclick="showCategory('duplicatesProduct', 'ze zduplikowanym kodem produktu')">
             <span class="legend-color-box box-striped-grey"></span>
@@ -242,13 +242,14 @@
                     <tr>
                         <th>ID</th>
                         <th>Kod Produktu</th>
+                        <th>Nazwa Produktu</th>
                         <th>Kod Dostawcy</th>
-                        <th>Netto</th>
-                        <th>Brutto</th>
-                        <th>EAN</th>
+                        <th>ID Dostawcy</th>
+                        <th>Cena Netto</th>
+                        <th>Cena Brutto</th>
+                        <th>Kody EAN</th>
                     </tr>
                 </thead>
-                <tbody id="dynamicTableBody"></tbody>
             </table>
         </div>
     </div>
@@ -361,9 +362,7 @@
         };
         
         let totalRecordsCount = 0; 
-        let globalRawProducts = []; // Do napraw
-        
-        // Zmienne do zliczania statystyk dostawców dla PDF
+        let globalRawProducts = []; 
         let globalSupplierStats = {};
         let globalTotalErrors = 0;
 
@@ -397,8 +396,6 @@
                 totalRecordsCount = products.length;
                 globalRawProducts = products;
 
-                const tableBody = document.getElementById('tableBody');
-                
                 const onlyLettersRegex = /^[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ]+$/;
                 const numbersUnderscoreLettersRegex = /\d+_[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ]+/;
                 const heuristicRegex = /^[A-Za-z0-9]+[-.\/][A-Za-z0-9]+$/; 
@@ -406,20 +403,25 @@
                 const productCodeCounts = {};
                 const supplierCodeCounts = {};
                 
-                products.forEach(p => {
+                for (let i = 0; i < products.length; i++) {
+                    let p = products[i];
                     let pCode = String(p.product_code || '').trim();
                     let sCode = String(p.supplier_code || '').trim();
-                    if (pCode) productCodeCounts[pCode] = (productCodeCounts[pCode] || 0) + 1;
-                    if (sCode) supplierCodeCounts[sCode] = (supplierCodeCounts[sCode] || 0) + 1;
-                });
+                    if (pCode && pCode !== '-') productCodeCounts[pCode] = (productCodeCounts[pCode] || 0) + 1;
+                    if (sCode && sCode !== '-' && sCode !== '0' && sCode !== 'BRAK_DANYCH') {
+                        supplierCodeCounts[sCode] = (supplierCodeCounts[sCode] || 0) + 1;
+                    }
+                }
 
-                // Inicjalizacja dla per-dostawca statystyk PDF
                 globalSupplierStats = {};
                 globalTotalErrors = 0;
+                
+                const tableDataForDT = [];
 
-                products.forEach(product => {
+                for (let i = 0; i < products.length; i++) {
+                    let product = products[i];
                     let isCorrectRecord = true; 
-                    let productErrors = []; // Lista błędów tego konkretnego produktu dla PDF statystyk dostawcy
+                    let productErrors = []; 
 
                     let productCodeValue = String(product.product_code || '').trim();
                     let supplierCode = String(product.supplier_code || '').trim();
@@ -437,23 +439,24 @@
                     let eanDisplay = '-'; 
                     
                     let parsedEans = [];
-                    if (eanData) {
+                    if (eanData !== null && eanData !== undefined && eanData !== '') {
                         if (Array.isArray(eanData)) {
                             parsedEans = eanData.map(String);
                             if (parsedEans.length > 1) hasMultipleEansArray = true;
-                        } else if (typeof eanData === 'string') {
-                            if (eanData.trim().startsWith('[')) {
+                        } else {
+                            let eanStr = String(eanData).trim();
+                            if (eanStr.startsWith('[')) {
                                 try {
-                                    const parsed = JSON.parse(eanData);
+                                    const parsed = JSON.parse(eanStr);
                                     if (Array.isArray(parsed)) {
                                         parsedEans = parsed.map(String);
                                         if (parsedEans.length > 1) hasMultipleEansArray = true;
                                     } else {
-                                        parsedEans = [eanData];
+                                        parsedEans = [eanStr];
                                     }
-                                } catch (e) { parsedEans = [eanData]; }
+                                } catch (e) { parsedEans = [eanStr]; }
                             } else {
-                                parsedEans = eanData.split(',').map(s => s.trim());
+                                parsedEans = eanStr.split(',').map(s => s.trim());
                                 if (parsedEans.length > 1) hasMultipleEansStr = true; 
                             }
                         }
@@ -466,8 +469,8 @@
                         eanDisplay = 'Brak EAN';
                     } else {
                         eanDisplay = parsedEans.join(', ');
-                        for (let eanToTest of parsedEans) {
-                            let eanStr = String(eanToTest).trim();
+                        for (let j = 0; j < parsedEans.length; j++) {
+                            let eanStr = String(parsedEans[j]).trim();
                             if (/[^\d]/.test(eanStr)) {
                                 isEanBadChars = true;
                             } else if (!isValidEAN(eanStr)) {
@@ -477,70 +480,83 @@
                     }
                     product.formatted_ean = eanDisplay;
 
-                    const row = document.createElement('tr');
-
                     let isPriceZero = netPrice <= 0 || grossPrice <= 0;
                     let isPriceCritical = netPrice > 0 && netPrice >= grossPrice;
                     let expectedGross = netPrice * 1.23;
                     let isVatError = netPrice > 0 && Math.abs(grossPrice - expectedGross) > 0.05;
 
-                    let isMissingSupplier = !supplierCode || !supplierId || supplierId === '0';
-                    let isSupplierDuplicate = supplierCode && supplierCodeCounts[supplierCode] > 1;
-                    let isProductDuplicate = productCodeValue && productCodeCounts[productCodeValue] > 1;
-
-                    // Logika klasyfikacji i zapisu błędów
-                    if (isPriceZero) { row.classList.add('highlight-brown'); productErrors.push("Cena 0 zl"); categoriesData.priceZero.push(product); isCorrectRecord = false; }
-                    else if (isPriceCritical) { row.classList.add('highlight-red-outline'); productErrors.push("Netto >= Brutto"); categoriesData.priceCritical.push(product); isCorrectRecord = false; }
-                    else if (isVatError) { row.classList.add('highlight-pink'); productErrors.push("Blad 23% VAT"); categoriesData.vatError.push(product); isCorrectRecord = false; }
+                    let isIdMissing = !supplierId || supplierId === '0' || supplierId === '-';
+                    let isCodeMissing = !supplierCode || supplierCode === '0' || supplierCode === '-' || supplierCode === 'BRAK_DANYCH';
+                    let isCodeEqualsId = supplierCode === supplierId && !isIdMissing;
                     
-                    if (isMissingSupplier) { row.classList.add('highlight-teal'); productErrors.push("Brak dostawcy"); categoriesData.missingSupplier.push(product); isCorrectRecord = false; }
-                    else if (isEanBadChars) { row.classList.add('highlight-purple'); productErrors.push("Zle znaki EAN"); categoriesData.eanBadChars.push(product); isCorrectRecord = false; }
-                    else if (isEanInvalid) { row.classList.add('highlight-indigo'); productErrors.push("Zla suma/dlugosc EAN"); categoriesData.eanInvalid.push(product); isCorrectRecord = false; }
-                    else if (productCodeValue.length > 0 && onlyLettersRegex.test(productCodeValue)) { row.classList.add('highlight-red'); productErrors.push("Kod: Tylko litery"); categoriesData.codeLetters.push(product); isCorrectRecord = false; }
-                    else if (productCodeValue.length > 0 && numbersUnderscoreLettersRegex.test(productCodeValue)) { row.classList.add('highlight-orange'); productErrors.push("Kod: Liczby+Litery"); categoriesData.codeOrange.push(product); isCorrectRecord = false; }
-                    else if (productCodeValue.length > 0 && heuristicRegex.test(productCodeValue)) { row.classList.add('highlight-grey'); productErrors.push("Kod: Heurystyka"); categoriesData.codeGrey.push(product); isCorrectRecord = false; }
-                    else if (hasMultipleEansStr) { row.classList.add('highlight-cyan'); productErrors.push("Wiele EAN (Przecinek)"); categoriesData.eanMultiStr.push(product); isCorrectRecord = false; } 
-                    else if (hasMultipleEansArray) { row.classList.add('highlight-blue'); productErrors.push("Wiele EAN (Tablica)"); categoriesData.eanMultiArray.push(product); isCorrectRecord = false; } 
-                    else if (isEanMissing) { row.classList.add('highlight-yellow'); productErrors.push("Brak EAN"); categoriesData.eanMissing.push(product); isCorrectRecord = false; }
+                    let isMissingSupplier = isIdMissing || isCodeMissing || isCodeEqualsId;
+                    let isSupplierDuplicate = supplierCode && !isCodeMissing && supplierCodeCounts[supplierCode] > 1;
+                    let isProductDuplicate = productCodeValue && productCodeValue !== '-' && productCodeCounts[productCodeValue] > 1;
 
-                    if (isProductDuplicate) { productErrors.push("Duplikat produktu"); categoriesData.duplicatesProduct.push(product); isCorrectRecord = false; }
-                    if (isSupplierDuplicate) { productErrors.push("Duplikat dostawcy"); categoriesData.duplicatesSupplier.push(product); isCorrectRecord = false; }
+                    if (isPriceZero) { categoriesData.priceZero.push(product); isCorrectRecord = false; productErrors.push("Cena 0 zl"); }
+                    if (isPriceCritical) { categoriesData.priceCritical.push(product); isCorrectRecord = false; productErrors.push("Netto >= Brutto"); }
+                    if (isVatError) { categoriesData.vatError.push(product); isCorrectRecord = false; productErrors.push("Blad 23% VAT"); }
+                    
+                    if (isMissingSupplier) { categoriesData.missingSupplier.push(product); isCorrectRecord = false; productErrors.push(isCodeEqualsId ? "Kod Dostawcy = ID" : "Brak dostawcy"); }
+                    
+                    if (isEanBadChars) { categoriesData.eanBadChars.push(product); isCorrectRecord = false; productErrors.push("Zle znaki EAN"); }
+                    if (isEanInvalid) { categoriesData.eanInvalid.push(product); isCorrectRecord = false; productErrors.push("Zla suma/dlugosc EAN"); }
+                    
+                    if (productCodeValue.length > 0 && onlyLettersRegex.test(productCodeValue)) { categoriesData.codeLetters.push(product); isCorrectRecord = false; productErrors.push("Kod: Tylko litery"); }
+                    if (productCodeValue.length > 0 && numbersUnderscoreLettersRegex.test(productCodeValue)) { categoriesData.codeOrange.push(product); isCorrectRecord = false; productErrors.push("Kod: Liczby+Litery"); }
+                    if (productCodeValue.length > 0 && heuristicRegex.test(productCodeValue)) { categoriesData.codeGrey.push(product); isCorrectRecord = false; productErrors.push("Kod: Heurystyka"); }
+                    
+                    if (hasMultipleEansStr) { categoriesData.eanMultiStr.push(product); isCorrectRecord = false; productErrors.push("Wiele EAN (Przecinek)"); } 
+                    if (hasMultipleEansArray) { categoriesData.eanMultiArray.push(product); isCorrectRecord = false; productErrors.push("Wiele EAN (Tablica)"); } 
+                    if (isEanMissing) { categoriesData.eanMissing.push(product); isCorrectRecord = false; productErrors.push("Brak EAN"); }
 
-                    if (productCodeValue.length === 0) { productErrors.push("Brak kodu produktu"); isCorrectRecord = false; }
-
+                    if (isProductDuplicate) { categoriesData.duplicatesProduct.push(product); isCorrectRecord = false; productErrors.push("Duplikat produktu"); }
+                    if (isSupplierDuplicate) { categoriesData.duplicatesSupplier.push(product); isCorrectRecord = false; productErrors.push("Duplikat dostawcy"); }
+                    if (productCodeValue.length === 0) { isCorrectRecord = false; productErrors.push("Brak kodu produktu"); }
+                    
                     if (isCorrectRecord) { categoriesData.correct.push(product); }
 
-                    // --- ZBIERANIE STATYSTYK DLA PDF ---
-                    let supplierKey = supplierCode ? supplierCode : (supplierId && supplierId !== '0' ? supplierId : "BRAK_DANYCH");
+                    let trClass = '';
+                    if (isPriceZero) trClass = 'highlight-brown';
+                    else if (isPriceCritical) trClass = 'highlight-red-outline';
+                    else if (isVatError) trClass = 'highlight-pink';
+                    else if (isMissingSupplier) trClass = 'highlight-teal';
+                    else if (isEanBadChars) trClass = 'highlight-purple';
+                    else if (isEanInvalid) trClass = 'highlight-indigo';
+                    else if (productCodeValue.length > 0 && onlyLettersRegex.test(productCodeValue)) trClass = 'highlight-red';
+                    else if (productCodeValue.length > 0 && numbersUnderscoreLettersRegex.test(productCodeValue)) trClass = 'highlight-orange';
+                    else if (productCodeValue.length > 0 && heuristicRegex.test(productCodeValue)) trClass = 'highlight-grey';
+                    else if (hasMultipleEansStr) trClass = 'highlight-cyan';
+                    else if (hasMultipleEansArray) trClass = 'highlight-blue';
+                    else if (isEanMissing) trClass = 'highlight-yellow';
+
+                    let supplierKey = supplierCode && !isCodeMissing ? supplierCode : (supplierId && !isIdMissing ? supplierId : "BRAK_DANYCH");
                     if (!globalSupplierStats[supplierKey]) {
-                        globalSupplierStats[supplierKey] = {
-                            totalProducts: 0,
-                            totalErrors: 0,
-                            errorsByType: {}
-                        };
+                        globalSupplierStats[supplierKey] = { totalProducts: 0, totalErrors: 0, errorsByType: {} };
                     }
                     globalSupplierStats[supplierKey].totalProducts++;
                     
                     if (productErrors.length > 0) {
                         globalSupplierStats[supplierKey].totalErrors += productErrors.length;
                         globalTotalErrors += productErrors.length;
-                        productErrors.forEach(err => {
+                        for (let k = 0; k < productErrors.length; k++) {
+                            let err = productErrors[k];
                             globalSupplierStats[supplierKey].errorsByType[err] = (globalSupplierStats[supplierKey].errorsByType[err] || 0) + 1;
-                        });
+                        }
                     }
 
-                    row.innerHTML = `
-                        <td>${product.product_id}</td>
-                        <td>${productCodeValue || '-'}</td>
-                        <td>${product.product_name || '-'}</td>
-                        <td>${supplierCode || '-'}</td>
-                        <td>${supplierId || '-'}</td>
-                        <td>${netPrice.toFixed(2)} zł</td>
-                        <td>${grossPrice.toFixed(2)} zł</td>
-                        <td><strong>${eanDisplay}</strong></td>
-                    `;
-                    tableBody.appendChild(row);
-                });
+                    tableDataForDT.push({
+                        DT_RowClass: trClass,
+                        id: product.product_id,
+                        code: productCodeValue || '-',
+                        name: product.product_name || '-',
+                        sup_code: supplierCode || '-',
+                        sup_id: supplierId || '-',
+                        net: netPrice.toFixed(2) + ' zł',
+                        gross: grossPrice.toFixed(2) + ' zł',
+                        ean: `<strong>${eanDisplay}</strong>`
+                    });
+                }
 
                 document.getElementById('stat-total').innerText = products.length;
                 document.getElementById('stat-correct').innerText = categoriesData.correct.length;
@@ -564,18 +580,36 @@
                 document.getElementById('legend').style.display = 'block';
                 document.getElementById('dynamic-wrapper').style.display = 'block';
                 document.getElementById('statistics-panel').style.display = 'flex'; 
-                document.getElementById('pdf-btn').style.display = 'inline-flex';
+                
+                // UAKTYWNIENIE WSZYSTKICH PRZYCISKÓW WŁĄCZNIE Z NOWYM ZŁOTYM
+                document.getElementById('dict-btn').style.display = 'inline-flex';
+                document.getElementById('adv-supplier-btn').style.display = 'inline-flex';
+                document.getElementById('multi-ean-btn').style.display = 'inline-flex';
+                document.getElementById('price-btn').style.display = 'inline-flex';
                 document.getElementById('fix-btn').style.display = 'inline-flex';
+                document.getElementById('pdf-btn').style.display = 'inline-flex';
 
                 $('#productsTable').DataTable({
-                    "lengthMenu": [10, 25, 50, 100],
-                    "pageLength": 10,
-                    "language": { "url": "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pl.json" }
+                    data: tableDataForDT,
+                    columns: [
+                        { data: 'id' },
+                        { data: 'code' },
+                        { data: 'name' },
+                        { data: 'sup_code' },
+                        { data: 'sup_id' },
+                        { data: 'net' },
+                        { data: 'gross' },
+                        { data: 'ean' }
+                    ],
+                    deferRender: true, 
+                    lengthMenu: [10, 25, 50, 100],
+                    pageLength: 10,
+                    language: { "url": "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pl.json" }
                 });
 
             } catch (error) {
                 console.error('Błąd:', error);
-                document.getElementById('loading').innerText = 'Wystąpił błąd podczas pobierania danych.';
+                document.getElementById('loading').innerText = 'Wystąpił błąd serwera. Prawdopodobnie skrypt zatrzymał się przez uszkodzone dane. Odśwież stronę (F5).';
             }
         }
 
@@ -606,132 +640,450 @@
             if ($.fn.DataTable.isDataTable('#dynamicTable')) {
                 $('#dynamicTable').DataTable().destroy();
             }
-            const tbody = document.getElementById('dynamicTableBody');
-            tbody.innerHTML = '';
             
-            data.forEach(product => {
-                const row = document.createElement('tr');
+            const dynTableData = data.map(product => {
                 let netPrice = parseFloat(product.net_price) || 0;
                 let grossPrice = parseFloat(product.gross_price) || 0;
-
-                row.innerHTML = `
-                    <td>${product.product_id}</td>
-                    <td><strong>${product.product_code || '-'}</strong></td>
-                    <td>${product.supplier_code || '-'}</td>
-                    <td>${netPrice.toFixed(2)} zł</td>
-                    <td>${grossPrice.toFixed(2)} zł</td>
-                    <td><span style="color: #444; font-weight: bold;">${product.formatted_ean || '-'}</span></td>
-                `;
-                tbody.appendChild(row);
+                return {
+                    id: product.product_id,
+                    code: `<strong>${product.product_code || '-'}</strong>`,
+                    name: product.product_name || '-',
+                    sup_code: product.supplier_code || '-',
+                    sup_id: product.supplier_id || '-',
+                    net: netPrice.toFixed(2) + ' zł',
+                    gross: grossPrice.toFixed(2) + ' zł',
+                    ean: `<span style="color: #444; font-weight: bold;">${product.formatted_ean || '-'}</span>`
+                };
             });
+
             $('#dynamicTable').DataTable({
-                "pageLength": 10,
-                "language": { "url": "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pl.json" }
+                data: dynTableData,
+                columns: [
+                    { data: 'id' },
+                    { data: 'code' },
+                    { data: 'name' },
+                    { data: 'sup_code' },
+                    { data: 'sup_id' },
+                    { data: 'net' },
+                    { data: 'gross' },
+                    { data: 'ean' }
+                ],
+                deferRender: true,
+                pageLength: 10,
+                language: { "url": "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pl.json" }
             });
         }
 
-        // --- AUTONAPRAWA ---
-        function exportFixedJSON() {
-            const fixedRecordsToExport = [];
+        function startProcess(btnId, loadingText, actionFunction) {
+            const btn = document.getElementById(btnId);
+            const originalText = btn.innerHTML;
+            btn.innerHTML = `⏳ ${loadingText}...`;
+            btn.disabled = true;
 
-            globalRawProducts.forEach(originalProduct => {
-                let p = JSON.parse(JSON.stringify(originalProduct));
-                let repairLog = [];
-                let hasErrorsOrModifications = false;
-
-                let eanData = p.ean_codes || p.ean; 
-                let parsedEans = [];
-                if (eanData) {
-                    if (Array.isArray(eanData)) {
-                        parsedEans = eanData.map(String);
-                    } else if (typeof eanData === 'string') {
-                        if (eanData.trim().startsWith('[')) {
-                            try {
-                                const parsed = JSON.parse(eanData);
-                                if (Array.isArray(parsed)) parsedEans = parsed.map(String);
-                                else parsedEans = [eanData];
-                            } catch (e) { parsedEans = [eanData]; }
-                        } else {
-                            parsedEans = eanData.split(',').map(s => s.trim());
-                        }
-                    }
+            setTimeout(() => {
+                try {
+                    actionFunction();
+                    btn.innerHTML = '✅ Zrobione!';
+                } catch (err) {
+                    console.error("Błąd podczas operacji: ", err);
+                    btn.innerHTML = '❌ Błąd';
+                    alert("Wystąpił błąd. Zbyt duży plik lub brak uprawnień przeglądarki.");
+                } finally {
+                    setTimeout(() => {
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                    }, 2500);
                 }
-                parsedEans = parsedEans.filter(e => e.trim() !== '');
+            }, 100);
+        }
 
-                let validEans = [];
-                let hasBadChars = false;
+        // --- ZŁOTY PRZYCISK: UZUPEŁNIANIE BRAKUJĄCEJ CENY ---
+        function executeFixMissingPrices() {
+            const blobParts = ['[\n'];
+            let isFirst = true;
+            let foundAny = false;
+
+            for (let i = 0; i < globalRawProducts.length; i++) {
+                let originalProduct = globalRawProducts[i];
+                let rawNet = originalProduct.net_price;
+                let rawGross = originalProduct.gross_price;
+
+                let net = parseFloat(rawNet);
+                let gross = parseFloat(rawGross);
                 
-                parsedEans.forEach(eanStr => {
-                    let cleaned = eanStr.replace(/[^\d]/g, ''); 
-                    if (cleaned !== eanStr) hasBadChars = true;
-                    if (isValidEAN(cleaned)) validEans.push(cleaned);
-                });
+                let isNetValid = !isNaN(net) && net > 0;
+                let isGrossValid = !isNaN(gross) && gross > 0;
 
-                if (parsedEans.length === 0) {
-                    hasErrorsOrModifications = true;
-                    repairLog.push("Brak kodu EAN (Wymaga recznej interwencji)");
-                } else if (parsedEans.length > 1 || hasBadChars || validEans.length < parsedEans.length) {
-                    hasErrorsOrModifications = true;
-                    if (validEans.length > 0) {
-                        p.ean_codes = [validEans[0]]; 
-                        if (parsedEans.length > 1) repairLog.push("Usunieto nadmiarowe kody EAN, pozostawiono pierwszy poprawny");
-                        if (hasBadChars) repairLog.push("Oczyszczono EAN z niepozadanych liter i znakow specjalnych");
-                    } else {
-                        repairLog.push("Bledny EAN (Zla suma kontrolna/dlugosc), wymaga recznej weryfikacji");
+                // WYŁĄCZNIE gdy dokładnie jedna cena jest pusta/zero, a druga prawidłowa
+                let needsNetCalc = (isGrossValid && !isNetValid);
+                let needsGrossCalc = (isNetValid && !isGrossValid);
+
+                if (needsNetCalc || needsGrossCalc) {
+                    let p = { ...originalProduct }; 
+                    p.adnotacje_poprawek = p.adnotacje_poprawek || [];
+
+                    if (needsGrossCalc) {
+                        p.gross_price = (net * 1.23).toFixed(2);
+                        p.adnotacje_poprawek.push(`Brak ceny Brutto. Wyliczono na podstawie Netto (+23% VAT): ${p.gross_price} zł.`);
+                    } else if (needsNetCalc) {
+                        p.net_price = (gross / 1.23).toFixed(2);
+                        p.adnotacje_poprawek.push(`Brak ceny Netto. Wyliczono na podstawie Brutto (-23% VAT): ${p.net_price} zł.`);
                     }
+
+                    delete p.formatted_ean;
+
+                    if (!isFirst) blobParts.push(",\n");
+                    blobParts.push(JSON.stringify(p, null, 4));
+                    isFirst = false;
+                    foundAny = true;
                 }
+            }
+            blobParts.push('\n]');
 
-                let net = parseFloat(p.net_price) || 0;
-                let gross = parseFloat(p.gross_price) || 0;
-                let expectedGross = net * 1.23;
-
-                if (net <= 0 && gross <= 0) {
-                    hasErrorsOrModifications = true;
-                    repairLog.push("Cena Netto i Brutto to 0 zl (Wymaga recznej weryfikacji)");
-                } else if (net > 0 && Math.abs(gross - expectedGross) > 0.05) {
-                    hasErrorsOrModifications = true;
-                    p.gross_price = expectedGross.toFixed(2);
-                    repairLog.push("Przeliczono i naprawiono cene Brutto (+23% VAT)");
-                } else if (net > 0 && net >= gross) {
-                    hasErrorsOrModifications = true;
-                    p.gross_price = expectedGross.toFixed(2);
-                    repairLog.push("Krytyczny blad: Cena Netto byla wyzsza od Brutto. Przeliczono Brutto");
-                }
-
-                let sCode = String(p.supplier_code || '').trim();
-                if (!sCode) {
-                    hasErrorsOrModifications = true;
-                    p.supplier_code = "BRAK_DANYCH";
-                    repairLog.push("Wstawiono znacznik 'BRAK_DANYCH' w puste pole kodu dostawcy");
-                }
-
-                if (hasErrorsOrModifications) {
-                    p.adnotacje_poprawek = repairLog; 
-                    delete p.formatted_ean; 
-                    fixedRecordsToExport.push(p);
-                }
-            });
-
-            if (fixedRecordsToExport.length === 0) {
-                alert("Super! Skrypt nie znalazł żadnych błędów do naprawy.");
+            if (!foundAny) {
+                alert("Brak produktów wymagających uzupełnienia pojedynczej ceny (Wszystkie mają obie, lub brakuje obu).");
                 return;
             }
 
-            const jsonString = JSON.stringify(fixedRecordsToExport, null, 4);
-            const blob = new Blob([jsonString], { type: "application/json" });
+            const blob = new Blob(blobParts, { type: "application/json" });
             const url = URL.createObjectURL(blob);
-            
             const link = document.createElement("a");
             link.href = url;
-            link.download = "naprawione_produkty_audyt.json";
+            link.download = "uzupelnione_brakujace_ceny.json";
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
             URL.revokeObjectURL(url);
         }
 
-        // --- ROZBUDOWANY GENERATOR PDF ---
-        function generatePDF() {
+        // --- POMARAŃCZOWY PRZYCISK: Formatka słownika ---
+        function executeStrictDictionaryFix() {
+            const supplierMap = {};
+
+            for (let i = 0; i < globalRawProducts.length; i++) {
+                let p = globalRawProducts[i];
+                let sId = String(p.supplier_id || '').trim();
+                let sCode = String(p.supplier_code || '').trim();
+                
+                if (sId && sId !== '0' && sCode && sCode !== '0' && sCode !== 'BRAK_DANYCH' && sCode !== '-' && sCode !== sId) {
+                    if (!supplierMap[sId]) supplierMap[sId] = new Set();
+                    supplierMap[sId].add(sCode);
+                }
+            }
+
+            const cleanSupplierMap = {};
+            for (const [key, value] of Object.entries(supplierMap)) {
+                cleanSupplierMap[key] = Array.from(value).join(', ');
+            }
+
+            const blobParts = ['[\n'];
+            let isFirst = true;
+            let foundAny = false;
+
+            for (let i = 0; i < globalRawProducts.length; i++) {
+                let originalProduct = globalRawProducts[i];
+                let currentCode = String(originalProduct.supplier_code || '').trim();
+                let currentId = String(originalProduct.supplier_id || '').trim();
+
+                if (!currentCode || currentCode === '0' || currentCode === 'BRAK_DANYCH' || currentCode === '-' || currentCode === currentId) {
+                    if (currentId && currentId !== '0') {
+                        let p = { ...originalProduct }; 
+                        
+                        if (cleanSupplierMap[currentId]) {
+                            p.supplier_code = cleanSupplierMap[currentId];
+                            p.adnotacje_poprawek = [`Odnaleziono w słowniku: Uzupełniono Kod Dostawcy (${p.supplier_code}) na podstawie przypisanego ID (${currentId}).`];
+                            delete p.formatted_ean;
+                            
+                            if (!isFirst) blobParts.push(",\n");
+                            blobParts.push(JSON.stringify(p, null, 4));
+                            isFirst = false;
+                            foundAny = true;
+                        }
+                    }
+                }
+            }
+            blobParts.push('\n]');
+
+            if (!foundAny) {
+                alert("Nie odnaleziono w bazie produktów kwalifikujących się do naprawy na podstawie słownika.");
+                return;
+            }
+
+            const blob = new Blob(blobParts, { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "formatka_uzupelnieni_dostawcy.json";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+
+        // --- FIOLETOWY PRZYCISK: Uzupełnianie błędów KOD = ID (Z dołączeniem słownika) ---
+        function executeAdvancedSupplierFix() {
+            const supplierMap = {};
+
+            for (let i = 0; i < globalRawProducts.length; i++) {
+                let p = globalRawProducts[i];
+                let sId = String(p.supplier_id || '').trim();
+                let sCode = String(p.supplier_code || '').trim();
+                
+                if (sId && sId !== '0' && sCode && sCode !== '0' && sCode !== 'BRAK_DANYCH' && sCode !== '-' && sCode !== sId) {
+                    if (!supplierMap[sId]) supplierMap[sId] = new Set();
+                    supplierMap[sId].add(sCode);
+                }
+            }
+
+            const cleanSupplierMap = {};
+            for (const [key, value] of Object.entries(supplierMap)) {
+                cleanSupplierMap[key] = Array.from(value);
+            }
+
+            const blobParts = [];
+            blobParts.push('{"wszystkie_kody_dostawcy_wg_id":' + JSON.stringify(cleanSupplierMap) + ',"naprawione_rekordy":[');
+            let isFirst = true;
+            let foundAny = false;
+
+            for (let i = 0; i < globalRawProducts.length; i++) {
+                let originalProduct = globalRawProducts[i];
+                let currentCode = String(originalProduct.supplier_code || '').trim();
+                let currentId = String(originalProduct.supplier_id || '').trim();
+
+                let isMissing = (!currentCode || currentCode === '0' || currentCode === 'BRAK_DANYCH' || currentCode === '-');
+                let isCodeEqualsId = (currentCode === currentId && currentId !== '0' && currentId !== '');
+
+                if (isMissing || isCodeEqualsId) {
+                    if (currentId && currentId !== '0') {
+                        let p = { ...originalProduct }; 
+                        let actionMsg = isCodeEqualsId ? "Kod był równy ID." : "Brakowało kodu.";
+                        
+                        if (cleanSupplierMap[currentId]) {
+                            p.supplier_code = cleanSupplierMap[currentId].join(', ');
+                            p.adnotacje_poprawek = [`${actionMsg} Znaleziono w słowniku i wpisano: ${p.supplier_code}`];
+                        } else {
+                            if (isMissing) {
+                                p.supplier_code = currentId;
+                                p.adnotacje_poprawek = [`${actionMsg} Brak w słowniku, wstawiono ID (${currentId}) jako kod tymczasowy.`];
+                            } else {
+                                p.adnotacje_poprawek = [`Kod był równy ID. Niestety nie znaleziono właściwego kodu w bazie.`];
+                            }
+                        }
+                        
+                        delete p.formatted_ean;
+                        if (!isFirst) blobParts.push(",");
+                        blobParts.push(JSON.stringify(p));
+                        isFirst = false;
+                        foundAny = true;
+                    }
+                }
+            }
+            blobParts.push(']}');
+
+            if (!foundAny) alert("Brak produktów do naprawy.");
+
+            const blob = new Blob(blobParts, { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "zaawansowana_naprawa_dostawcow.json";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+
+        // --- MORSKI PRZYCISK: CZYSZCZENIE MULTI EAN ---
+        function executeFixMultiEans() {
+            const blobParts = ["[\n"];
+            let isFirst = true;
+            let foundAny = false;
+
+            for (let i = 0; i < globalRawProducts.length; i++) {
+                let originalProduct = globalRawProducts[i];
+                let eanData = originalProduct.ean_codes || originalProduct.ean; 
+                
+                let parsedEans = [];
+                if (eanData !== null && eanData !== undefined && eanData !== '') {
+                    if (Array.isArray(eanData)) {
+                        parsedEans = eanData.map(String);
+                    } else {
+                        let eanStr = String(eanData).trim();
+                        if (eanStr.startsWith('[')) {
+                            try {
+                                const parsed = JSON.parse(eanStr);
+                                if (Array.isArray(parsed)) parsedEans = parsed.map(String);
+                                else parsedEans = [eanStr];
+                            } catch (e) { parsedEans = [eanStr]; }
+                        } else {
+                            parsedEans = eanStr.split(',').map(s => s.trim());
+                        }
+                    }
+                }
+                parsedEans = parsedEans.filter(e => e.trim() !== '');
+
+                if (parsedEans.length > 1) {
+                    let validEans = [];
+                    let hasInvalid = false;
+
+                    parsedEans.forEach(eanStr => {
+                        let cleaned = eanStr.replace(/[^\d]/g, ''); 
+                        if (cleaned !== eanStr || !isValidEAN(cleaned)) {
+                            hasInvalid = true;
+                        } else {
+                            validEans.push(cleaned);
+                        }
+                    });
+
+                    let p = { ...originalProduct };
+                    p.adnotacje_poprawek = [];
+                    
+                    if (hasInvalid) {
+                        if (validEans.length > 0) {
+                            p.adnotacje_poprawek.push(`Usunięto błędne kody z listy. Pozostawiono poprawne: ${validEans.length} szt.`);
+                        } else {
+                            p.adnotacje_poprawek.push(`Wszystkie podane kody EAN były błędne. Usunięto je całkowicie.`);
+                        }
+                    } else {
+                        p.adnotacje_poprawek.push(`Wszystkie wpisane kody EAN (${validEans.length} szt.) są prawidłowe. Zachowano wszystkie.`);
+                    }
+
+                    p.ean_codes = validEans.join(', ');
+                    delete p.formatted_ean;
+
+                    if (!isFirst) blobParts.push(",\n");
+                    blobParts.push(JSON.stringify(p, null, 4));
+                    isFirst = false;
+                    foundAny = true;
+                }
+            }
+            blobParts.push("\n]");
+
+            if (!foundAny) {
+                alert("Brak produktów z wieloma kodami EAN do przeanalizowania.");
+                return;
+            }
+
+            const blob = new Blob(blobParts, { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "wyczyszczone_multi_eany.json";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+
+        // --- ZIELONY ZWYKŁY (EAN/CENY) ---
+        function executeExportFixedJSON() {
+            const blobParts = ["[\n"];
+            let isFirst = true;
+            let foundAny = false;
+
+            for (let i = 0; i < globalRawProducts.length; i++) {
+                let originalProduct = globalRawProducts[i];
+                let eanData = originalProduct.ean_codes || originalProduct.ean; 
+                let net = parseFloat(originalProduct.net_price) || 0;
+                let gross = parseFloat(originalProduct.gross_price) || 0;
+                let needsFixing = false;
+
+                if (!eanData || String(eanData) === '' || String(eanData) === '[]') needsFixing = true;
+                if (!needsFixing && net <= 0 && gross <= 0) needsFixing = true;
+                if (!needsFixing && net > 0 && Math.abs(gross - (net * 1.23)) > 0.05) needsFixing = true;
+                if (!needsFixing && net > 0 && net >= gross) needsFixing = true;
+                
+                if (!needsFixing && eanData) {
+                    let eanStr = String(eanData);
+                    if (/[^\d,\[\]\s"]/.test(eanStr) || eanStr.split(',').length > 1) needsFixing = true;
+                }
+
+                if (needsFixing) {
+                    let p = { ...originalProduct }; 
+                    let repairLog = [];
+                    let modified = false;
+
+                    let pEanData = p.ean_codes || p.ean; 
+                    let parsedEans = [];
+                    if (pEanData !== null && pEanData !== undefined && pEanData !== '') {
+                        if (Array.isArray(pEanData)) {
+                            parsedEans = pEanData.map(String);
+                        } else {
+                            let eanStr = String(pEanData).trim();
+                            if (eanStr.startsWith('[')) {
+                                try {
+                                    const parsed = JSON.parse(eanStr);
+                                    if (Array.isArray(parsed)) parsedEans = parsed.map(String);
+                                    else parsedEans = [eanStr];
+                                } catch (e) { parsedEans = [eanStr]; }
+                            } else {
+                                parsedEans = eanStr.split(',').map(s => s.trim());
+                            }
+                        }
+                    }
+                    parsedEans = parsedEans.filter(e => e.trim() !== '');
+
+                    let validEans = [];
+                    let hasBadChars = false;
+                    parsedEans.forEach(eanStr => {
+                        let cleaned = eanStr.replace(/[^\d]/g, ''); 
+                        if (cleaned !== eanStr) hasBadChars = true;
+                        if (isValidEAN(cleaned)) validEans.push(cleaned);
+                    });
+
+                    if (parsedEans.length === 0) {
+                        modified = true; repairLog.push("Brak kodu EAN (Wymaga recznej weryfikacji)");
+                    } else if (parsedEans.length > 1 || hasBadChars || validEans.length < parsedEans.length) {
+                        modified = true;
+                        if (validEans.length > 0) {
+                            p.ean_codes = [validEans[0]]; 
+                            if (parsedEans.length > 1) repairLog.push("Usunieto nadmiarowe EAN");
+                            if (hasBadChars) repairLog.push("Usunieto zle znaki z EAN");
+                        } else {
+                            repairLog.push("EAN nie do naprawienia (zla suma/dlugosc)");
+                        }
+                    }
+
+                    let expectedGross = net * 1.23;
+                    if (net <= 0 && gross <= 0) {
+                        modified = true; repairLog.push("Ceny zerowe");
+                    } else if (net > 0 && Math.abs(gross - expectedGross) > 0.05) {
+                        modified = true; p.gross_price = expectedGross.toFixed(2); repairLog.push("Przeliczono VAT na Brutto");
+                    } else if (net > 0 && net >= gross) {
+                        modified = true; p.gross_price = expectedGross.toFixed(2); repairLog.push("Cena Netto wyzsza od Brutto - Naprawiono");
+                    }
+
+                    if (modified) {
+                        p.adnotacje_poprawek = repairLog; 
+                        delete p.formatted_ean; 
+
+                        if (!isFirst) blobParts.push(",\n");
+                        blobParts.push(JSON.stringify(p, null, 4));
+                        isFirst = false;
+                        foundAny = true;
+                    }
+                }
+            }
+            blobParts.push("\n]");
+
+            if (!foundAny) {
+                alert("Super! Skrypt nie znalazł żadnych błędów matematycznych do naprawy.");
+                return;
+            }
+
+            const blob = new Blob(blobParts, { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "naprawione_bledy_matematyczne.json";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+
+        // --- CZERWONY PRZYCISK: GENERATOR PDF ---
+        function executeGeneratePDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             const removePl = (str) => {
@@ -745,7 +1097,6 @@
             doc.setTextColor(100);
             doc.text(removePl(`Data wygenerowania: ${new Date().toLocaleString('pl-PL')}`), 14, 28);
             
-            // --- Strona 1: Statystyki Ogólne ---
             const statsData = [
                 ['Ogolne', 'Wszystkie produkty', totalRecordsCount],
                 ['Ogolne', 'Calkowicie poprawne rekordy', categoriesData.correct.length],
@@ -762,7 +1113,7 @@
                 ['EAN i Dostawcy', 'Wiele kodow EAN wpisanych recznie', categoriesData.eanMultiStr.length], 
                 ['EAN i Dostawcy', 'Kod zawiera niepozadane znaki lub litery', categoriesData.eanBadChars.length], 
                 ['EAN i Dostawcy', 'Bledna suma kontrolna lub dlugosc', categoriesData.eanInvalid.length], 
-                ['EAN i Dostawcy', 'Brak przypisanego Dostawcy', categoriesData.missingSupplier.length],
+                ['EAN i Dostawcy', 'Brak przypisanego Dostawcy (lub Kod=ID)', categoriesData.missingSupplier.length],
             ];
 
             doc.autoTable({
@@ -775,19 +1126,16 @@
                 columnStyles: { 2: { halign: 'center', fontStyle: 'bold' } }
             });
 
-            // --- Strona 2: Statystyki Dostawców (w poziomie / landscape) ---
             doc.addPage("a4", "landscape");
             doc.setFontSize(16);
             doc.setTextColor(50);
             doc.text(removePl("Szczegolowe Statystyki na Dostawce"), 14, 20);
 
-            // Generowanie danych do drugiej tabeli PDF
             const supplierTableData = Object.keys(globalSupplierStats).map(key => {
                 const stat = globalSupplierStats[key];
                 const errorsPer100 = stat.totalProducts > 0 ? ((stat.totalErrors / stat.totalProducts) * 100).toFixed(2) : 0;
                 const shareOfErrors = globalTotalErrors > 0 ? ((stat.totalErrors / globalTotalErrors) * 100).toFixed(2) + '%' : '0%';
                 
-                // Sortowanie i wybieranie TOP 5 błędów
                 const top5 = Object.entries(stat.errorsByType)
                                    .sort((a, b) => b[1] - a[1])
                                    .slice(0, 5)
@@ -804,10 +1152,7 @@
                 ];
             });
 
-            // Sortowanie malejąco po całkowitej liczbie błędów u dostawcy
             supplierTableData.sort((a, b) => b[2] - a[2]);
-
-            // Usuwamy dostawców, którzy mają 0 błędów, aby skupić się na najgorszych (opcjonalnie)
             const filteredSupplierData = supplierTableData.filter(row => row[2] > 0);
 
             doc.autoTable({
@@ -822,7 +1167,7 @@
                 ]],
                 body: filteredSupplierData,
                 theme: 'grid',
-                headStyles: { fillColor: [0, 123, 255] }, // Niebieski nagłówek
+                headStyles: { fillColor: [0, 123, 255] }, 
                 styles: { font: 'helvetica', fontSize: 9 },
                 columnStyles: {
                     0: { cellWidth: 35, fontStyle: 'bold' },
@@ -830,7 +1175,7 @@
                     2: { halign: 'center', cellWidth: 25, fontStyle: 'bold', textColor: [220, 53, 69] },
                     3: { halign: 'center', cellWidth: 35 },
                     4: { halign: 'center', cellWidth: 35 },
-                    5: { cellWidth: 'auto' } // Ucięcie nadmiaru miejsca
+                    5: { cellWidth: 'auto' }
                 }
             });
 
