@@ -83,6 +83,7 @@
         .box-purple { background-color: #e1bee7; border-color: #7b1fa2; }
         .box-indigo { background-color: #c5cae9; border-color: #3f51b5; }
         .box-teal { background-color: #b2dfdb; border-color: #00796b; }
+        .btn-pink { background-color: #d63384; } .btn-pink:hover:not(:disabled) { background-color: #b02a6c; }
         .box-striped-grey { background: repeating-linear-gradient(45deg, #fff, #fff 4px, #bdbdbd 4px, #bdbdbd 8px); border-color: #757575; }
         .box-striped-green { background: repeating-linear-gradient(45deg, #fff, #fff 4px, #a5d6a7 4px, #a5d6a7 8px); border-color: #388e3c; }
 
@@ -141,6 +142,9 @@
             </button>
             <button id="price-btn" class="pdf-btn btn-gold" style="display:none;" onclick="startProcess('price-btn', 'Przeliczanie cen', executeFixMissingPrices)">
                 💰 Uzupełnij Brakującą Cenę (23% VAT)
+            </button>
+            <button id="dup-sup-btn" class="pdf-btn btn-pink" style="display:none;" onclick="startProcess('dup-sup-btn', 'Generowanie JSON', executeExportDuplicateSuppliers)">
+                👯 Pobierz Zduplikowanych Dostawców (JSON)
             </button>
             <button id="fix-btn" class="pdf-btn btn-green" style="display:none;" onclick="startProcess('fix-btn', 'Generowanie JSON', executeExportFixedJSON)">
                 🔧 Napraw pozostałe błędy (Ceny/EAN)
@@ -586,6 +590,7 @@
                 document.getElementById('adv-supplier-btn').style.display = 'inline-flex';
                 document.getElementById('multi-ean-btn').style.display = 'inline-flex';
                 document.getElementById('price-btn').style.display = 'inline-flex';
+                document.getElementById('dup-sup-btn').style.display = 'inline-flex';
                 document.getElementById('fix-btn').style.display = 'inline-flex';
                 document.getElementById('pdf-btn').style.display = 'inline-flex';
 
@@ -974,7 +979,62 @@
             document.body.removeChild(link);
             URL.revokeObjectURL(url);
         }
+        // --- RÓŻOWY PRZYCISK: EKSPORT ZDUPLIKOWANYCH KODÓW DOSTAWCÓW ---
+        function executeExportDuplicateSuppliers() {
+            const supplierCodeCounts = {};
+            
+            // 1. Zliczanie wystąpień kodów dostawcy w całej bazie
+            for (let i = 0; i < globalRawProducts.length; i++) {
+                let p = globalRawProducts[i];
+                let sCode = String(p.supplier_code || '').trim();
+                // Ignorujemy puste pola, zera i myślniki
+                if (sCode && sCode !== '-' && sCode !== '0' && sCode !== 'BRAK_DANYCH') {
+                    supplierCodeCounts[sCode] = (supplierCodeCounts[sCode] || 0) + 1;
+                }
+            }
 
+            // 2. Grupowanie zduplikowanych rekordów wg Kodu Dostawcy
+            const duplicatesGrouped = {};
+            let foundAny = false;
+
+            for (let i = 0; i < globalRawProducts.length; i++) {
+                let p = globalRawProducts[i];
+                let sCode = String(p.supplier_code || '').trim();
+                let sId = String(p.supplier_id || '').trim();
+
+                // Jeśli kod występuje więcej niż 1 raz, dodajemy go do obiektu
+                if (sCode && sCode !== '-' && sCode !== '0' && sCode !== 'BRAK_DANYCH' && supplierCodeCounts[sCode] > 1) {
+                    if (!duplicatesGrouped[sCode]) {
+                        duplicatesGrouped[sCode] = [];
+                    }
+                    // Zapisujemy tylko niezbędne dane dla przejrzystości pliku
+                    duplicatesGrouped[sCode].push({
+                        "id_produktu": p.product_id,
+                        "kod_produktu": p.product_code,
+                        "id_dostawcy": sId,
+                        "kod_dostawcy": sCode
+                    });
+                    foundAny = true;
+                }
+            }
+
+            if (!foundAny) {
+                alert("Brak zduplikowanych kodów dostawców w bazie.");
+                return;
+            }
+
+            // 3. Konwersja i pobieranie bezpiecznego pliku
+            const jsonString = JSON.stringify(duplicatesGrouped, null, 4);
+            const blob = new Blob([jsonString], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "zduplikowani_dostawcy.json";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
         // --- ZIELONY ZWYKŁY (EAN/CENY) ---
         function executeExportFixedJSON() {
             const blobParts = ["[\n"];
