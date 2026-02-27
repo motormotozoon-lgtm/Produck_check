@@ -84,6 +84,7 @@
         .box-indigo { background-color: #c5cae9; border-color: #3f51b5; }
         .box-teal { background-color: #b2dfdb; border-color: #00796b; }
         .btn-pink { background-color: #d63384; } .btn-pink:hover:not(:disabled) { background-color: #b02a6c; }
+        .btn-dark { background-color: #343a40; color: white; } .btn-dark:hover:not(:disabled) { background-color: #23272b; }
         .box-striped-grey { background: repeating-linear-gradient(45deg, #fff, #fff 4px, #bdbdbd 4px, #bdbdbd 8px); border-color: #757575; }
         .box-striped-green { background: repeating-linear-gradient(45deg, #fff, #fff 4px, #a5d6a7 4px, #a5d6a7 8px); border-color: #388e3c; }
 
@@ -145,6 +146,9 @@
             </button>
             <button id="dup-sup-btn" class="pdf-btn btn-pink" style="display:none;" onclick="startProcess('dup-sup-btn', 'Generowanie JSON', executeExportDuplicateSuppliers)">
                 👯 Pobierz Zduplikowanych Dostawców (JSON)
+            </button>
+            <button id="search-ean-btn" class="pdf-btn btn-dark" style="display:none;" onclick="startProcess('search-ean-btn', 'Generowanie bazy do wyszukania', executeExportMissingEanSearch)">
+                🕵️‍♂️ Wyszukaj brakujące/błędne EAN w sieci
             </button>
             <button id="fix-btn" class="pdf-btn btn-green" style="display:none;" onclick="startProcess('fix-btn', 'Generowanie JSON', executeExportFixedJSON)">
                 🔧 Napraw pozostałe błędy (Ceny/EAN)
@@ -591,6 +595,7 @@
                 document.getElementById('multi-ean-btn').style.display = 'inline-flex';
                 document.getElementById('price-btn').style.display = 'inline-flex';
                 document.getElementById('dup-sup-btn').style.display = 'inline-flex';
+                document.getElementById('search-ean-btn').style.display = 'inline-flex';
                 document.getElementById('fix-btn').style.display = 'inline-flex';
                 document.getElementById('pdf-btn').style.display = 'inline-flex';
 
@@ -1030,6 +1035,80 @@
             const link = document.createElement("a");
             link.href = url;
             link.download = "zduplikowani_dostawcy.json";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+        // --- CZARNY PRZYCISK: WYSZUKIWANIE W INTERNECIE BRAKUJĄCYCH EAN ---
+        function executeExportMissingEanSearch() {
+            const missingEansToExport = [];
+
+            for (let i = 0; i < globalRawProducts.length; i++) {
+                let p = globalRawProducts[i];
+                let eanData = p.ean_codes || p.ean;
+                let isMissingOrInvalid = false;
+
+                // Rozpakowanie i sprawdzenie kodu EAN
+                let parsedEans = [];
+                if (eanData !== null && eanData !== undefined && eanData !== '') {
+                    if (Array.isArray(eanData)) {
+                        parsedEans = eanData.map(String);
+                    } else {
+                        let eanStr = String(eanData).trim();
+                        if (eanStr.startsWith('[')) {
+                            try { parsedEans = JSON.parse(eanStr).map(String); } catch(e) { parsedEans = [eanStr]; }
+                        } else {
+                            parsedEans = eanStr.split(',').map(s => s.trim());
+                        }
+                    }
+                }
+                parsedEans = parsedEans.filter(e => e.trim() !== '');
+
+                // Oceniamy, czy produkt ma błąd EAN (brak kodu, złe znaki lub nie przechodzi weryfikacji Modulo 10)
+                if (parsedEans.length === 0) {
+                    isMissingOrInvalid = true;
+                } else {
+                    for (let j = 0; j < parsedEans.length; j++) {
+                        let eStr = String(parsedEans[j]).trim();
+                        let cleaned = eStr.replace(/[^\d]/g, '');
+                        if (cleaned !== eStr || !isValidEAN(cleaned)) {
+                            isMissingOrInvalid = true;
+                            break;
+                        }
+                    }
+                }
+
+                // Jeśli wykryto brak lub błąd, przygotowujemy rekord do pliku JSON
+                if (isMissingOrInvalid) {
+                    let productName = p.product_name || '';
+                    let productCode = p.product_code && p.product_code !== '-' ? p.product_code : '';
+                    
+                    // Bezpieczne zbudowanie linku do Google Search dla pracownika
+                    let searchQuery = `${productName} ${productCode}`.trim();
+                    let googleSearchUrl = `https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`;
+
+                    missingEansToExport.push({
+                        "id_produktu": p.product_id,
+                        "kod_produktu": productCode || 'BRAK',
+                        "nazwa_produktu": productName || 'BRAK',
+                        "obecny_bledny_ean": eanData || 'BRAK DANYCH',
+                        "wyszukaj_w_google": googleSearchUrl
+                    });
+                }
+            }
+
+            if (missingEansToExport.length === 0) {
+                alert("Wszystkie kody EAN w bazie są poprawne!");
+                return;
+            }
+
+            const jsonString = JSON.stringify(missingEansToExport, null, 4);
+            const blob = new Blob([jsonString], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "do_wyszukania_brakujace_ean.json";
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
